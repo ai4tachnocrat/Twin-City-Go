@@ -1,0 +1,923 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>Twin City Go – prototype</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Atkinson+Hyperlegible:wght@400;700&family=Bricolage+Grotesque:opsz,wght@12..96,500..800&display=swap" rel="stylesheet">
+<script src="https://cdn.jsdelivr.net/npm/lucide@0.383.0/dist/umd/lucide.min.js"></script>
+<style>
+:root{
+  --bg:#0B1A33;--surf:#12284F;--surf2:#1A3463;--line:#2B4778;--text:#F4F7FC;--mute:#A9B7D0;
+  --blue:#3D8BFF;--blue-ink:#FFFFFF;--green:#2BD67B;--warn:#FFC24B;--danger:#FF6B7A;
+  --display:"Bricolage Grotesque",ui-sans-serif,system-ui,"Segoe UI",sans-serif;
+  --body:"Atkinson Hyperlegible",ui-sans-serif,system-ui,"Segoe UI",Roboto,sans-serif;
+  color-scheme:dark;
+  box-sizing:border-box;
+  padding-top:env(safe-area-inset-top,0px);
+  padding-bottom:env(safe-area-inset-bottom,0px);
+}
+@media (prefers-color-scheme: light){
+  :root:not([data-theme="dark"]){
+    --bg:#EDF2FA;--surf:#FFFFFF;--surf2:#E1E9F6;--line:#C6D3E8;--text:#0B1A33;--mute:#475877;
+    --blue:#1C62E0;--blue-ink:#FFFFFF;--green:#0B8F4C;--warn:#8F5B00;--danger:#C1283A;color-scheme:light;
+  }
+}
+:root[data-theme="light"]{
+  --bg:#EDF2FA;--surf:#FFFFFF;--surf2:#E1E9F6;--line:#C6D3E8;--text:#0B1A33;--mute:#475877;
+  --blue:#1C62E0;--blue-ink:#FFFFFF;--green:#0B8F4C;--warn:#8F5B00;--danger:#C1283A;color-scheme:light;
+}
+:root[data-theme="dark"]{
+  --bg:#0B1A33;--surf:#12284F;--surf2:#1A3463;--line:#2B4778;--text:#F4F7FC;--mute:#A9B7D0;
+  --blue:#3D8BFF;--blue-ink:#FFFFFF;--green:#2BD67B;--warn:#FFC24B;--danger:#FF6B7A;color-scheme:dark;
+}
+*,*::before,*::after{box-sizing:inherit}
+html{scroll-padding-top:env(safe-area-inset-top,0px)}
+body{margin:0;background:var(--bg);color:var(--text);font:16px/1.5 var(--body);-webkit-font-smoothing:antialiased}
+body::before{content:"";position:fixed;inset:0 0 auto;height:env(safe-area-inset-top,0px);z-index:10;background:var(--bg)}
+button,input,select,textarea{font:inherit;color:inherit}
+button{cursor:pointer}
+a{color:var(--blue)}
+:focus-visible{outline:3px solid var(--blue);outline-offset:2px;border-radius:6px}
+img,svg{max-width:100%}
+.sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0)}
+i[data-lucide],svg.lucide{width:18px;height:18px;flex:none}
+
+/* header */
+header.top{position:sticky;top:env(safe-area-inset-top,0px);z-index:20;background:var(--bg);border-bottom:1px solid var(--line)}
+.bar{max-width:1280px;margin:0 auto;padding:10px 16px;display:flex;align-items:center;gap:12px}
+.logo{display:flex;align-items:center;gap:8px;text-decoration:none;color:var(--text);font:800 20px/1 var(--display);letter-spacing:-.02em;white-space:nowrap}
+.logo svg{width:34px;height:20px}
+.tabs{display:flex;gap:4px;margin-left:8px}
+.tabs a{padding:8px 12px;border-radius:10px;color:var(--mute);text-decoration:none;font-weight:700;font-size:15px}
+.tabs a[aria-current="page"]{color:var(--text);background:var(--surf2)}
+.search{flex:1;position:relative;min-width:0}
+.search input{width:100%;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--surf);padding:0 38px 0 40px;outline:none}
+.search input:focus{border-color:var(--blue)}
+.search .s-ico{position:absolute;left:12px;top:12px;color:var(--mute)}
+.search .clear{position:absolute;right:6px;top:6px;border:0;background:none;width:30px;height:30px;color:var(--mute);display:none;align-items:center;justify-content:center}
+.search.has .clear{display:flex}
+.sugg{position:absolute;left:0;right:0;top:48px;background:var(--surf);border:1px solid var(--line);border-radius:12px;padding:6px;display:none;max-height:60vh;overflow:auto;box-shadow:0 16px 40px rgba(0,0,0,.35)}
+.sugg.on{display:block}
+.sugg button{display:flex;width:100%;gap:10px;align-items:center;text-align:left;border:0;background:none;padding:9px 10px;border-radius:8px}
+.sugg button:hover,.sugg button.hl{background:var(--surf2)}
+.sugg small{color:var(--mute);margin-left:auto;white-space:nowrap}
+.ibtn{width:42px;height:42px;border-radius:12px;border:1px solid var(--line);background:var(--surf);display:inline-flex;align-items:center;justify-content:center;position:relative;flex:none}
+.ibtn .dot{position:absolute;top:8px;right:9px;width:8px;height:8px;border-radius:50%;background:var(--green)}
+.pop{position:absolute;right:0;top:50px;width:min(320px,90vw);background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:14px;display:none;z-index:30;text-align:left;box-shadow:0 16px 40px rgba(0,0,0,.35)}
+.pop.on{display:block}
+.pop p{margin:0 0 10px;font-size:14px}
+.pop p:last-child{margin:0}
+.wrapRel{position:relative}
+
+/* layout */
+main{max-width:1280px;margin:0 auto;padding:16px 16px 110px}
+.notice{display:flex;gap:10px;align-items:flex-start;border:1px dashed var(--warn);color:var(--text);border-radius:12px;padding:10px 12px;font-size:14px;margin-bottom:16px}
+.notice i{color:var(--warn);margin-top:2px}
+.notice button{margin-left:auto;border:0;background:none;color:var(--mute);padding:2px}
+.place-head{display:flex;flex-wrap:wrap;align-items:flex-end;gap:8px 16px;margin:4px 0 14px}
+.place-head h1{font:800 clamp(30px,6vw,56px)/.95 var(--display);letter-spacing:-.035em;margin:0}
+.place-head h1 .near{display:block;font-size:.42em;font-weight:600;color:var(--mute);letter-spacing:-.01em;margin-bottom:6px}
+.anchorpick{display:flex;align-items:center;gap:6px;border:1px solid var(--line);background:var(--surf);border-radius:12px;padding:0 4px 0 10px;height:40px}
+.anchorpick select{border:0;background:transparent;height:38px;font-weight:700;padding-right:4px;max-width:58vw}
+.unv{font-size:13px;color:var(--warn);display:flex;gap:6px;align-items:center}
+
+.toolbar{display:flex;flex-wrap:wrap;gap:8px;align-items:center;margin:10px 0}
+.toolbar label{font-size:13px;color:var(--mute);display:flex;flex-direction:column;gap:2px}
+.toolbar select{height:38px;border-radius:10px;border:1px solid var(--line);background:var(--surf);padding:0 8px}
+.seg{display:inline-flex;border:1px solid var(--line);border-radius:12px;padding:3px;background:var(--surf);margin-left:auto}
+.seg button{border:0;background:none;padding:7px 12px;border-radius:9px;display:flex;gap:6px;align-items:center;font-weight:700;color:var(--mute)}
+.seg button[aria-pressed="true"]{background:var(--blue);color:var(--blue-ink)}
+.chips{display:flex;gap:8px;overflow-x:auto;padding:4px 0 8px;scrollbar-width:none}
+.chips::-webkit-scrollbar{display:none}
+.chip{flex:none;display:inline-flex;gap:6px;align-items:center;height:38px;padding:0 14px;border-radius:999px;border:1px solid var(--line);background:var(--surf);font-weight:700;font-size:15px;white-space:nowrap}
+.chip[aria-pressed="true"]{background:var(--text);color:var(--bg);border-color:var(--text)}
+.chip .sw{width:10px;height:10px;border-radius:50%;background:var(--c)}
+.chips.sub .chip{height:32px;font-size:14px;font-weight:400;background:transparent}
+.chips.sub .chip[aria-pressed="true"]{background:var(--blue);border-color:var(--blue);color:var(--blue-ink);font-weight:700}
+.resultline{font-size:14px;color:var(--mute);margin:6px 0 12px;display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.qtag{display:inline-flex;gap:4px;align-items:center;background:var(--surf2);color:var(--text);border-radius:999px;padding:2px 4px 2px 10px}
+.qtag button{border:0;background:none;padding:2px;display:flex;color:var(--mute)}
+
+/* feed */
+.feed{display:grid;grid-template-columns:repeat(2,minmax(0,1fr));gap:12px}
+@media (min-width:720px){.feed{grid-template-columns:repeat(3,minmax(0,1fr));gap:16px}}
+@media (min-width:1100px){.feed{grid-template-columns:repeat(4,minmax(0,1fr))}}
+.card{background:var(--surf);border:1px solid var(--line);border-radius:18px;overflow:hidden;cursor:pointer;display:flex;flex-direction:column;min-width:0}
+.card:hover{border-color:var(--c)}
+.art{position:relative;aspect-ratio:4/3;background:color-mix(in srgb,var(--c) 16%,var(--surf2));overflow:hidden}
+.art svg.radar{position:absolute;inset:0;width:100%;height:100%}
+.art .ico{position:absolute;left:10px;top:10px;width:34px;height:34px;border-radius:10px;background:var(--c);color:#0B1A33;display:flex;align-items:center;justify-content:center}
+.art .dist{position:absolute;left:12px;bottom:8px;font:800 clamp(22px,4.6vw,34px)/1 var(--display);letter-spacing:-.03em;color:var(--text)}
+.art .dist small{font-size:.45em;font-weight:600;color:var(--mute);display:block;letter-spacing:0;margin-top:2px}
+.badge{display:inline-flex;align-items:center;gap:4px;font-size:12px;font-weight:700;padding:3px 8px;border-radius:999px;border:1px solid currentColor;white-space:nowrap}
+.badge.demo{color:var(--warn)}
+.badge.real{color:var(--green)}
+.badge.st{color:var(--mute)}
+.badge.rep{color:var(--danger)}
+.art .badge{position:absolute;right:10px;top:12px;background:var(--bg)}
+.cbody{padding:10px 12px 12px;display:flex;flex-direction:column;gap:4px;flex:1}
+.cbody h3{margin:0;font:700 17px/1.2 var(--display);letter-spacing:-.01em}
+.meta{margin:0;font-size:13px;color:var(--mute)}
+.desc{margin:2px 0 0;font-size:14px;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+.cfoot{display:flex;align-items:center;gap:6px;margin-top:auto;padding-top:6px}
+.openst{font-size:13px;font-weight:700}
+.openst.y{color:var(--green)}.openst.n{color:var(--danger)}.openst.u{color:var(--mute);font-weight:400}
+.save{margin-left:auto;border:0;background:none;width:34px;height:34px;border-radius:10px;display:flex;align-items:center;justify-content:center;color:var(--mute)}
+.save[aria-pressed="true"]{color:var(--danger)}
+.save[aria-pressed="true"] svg{fill:currentColor}
+@media (max-width:480px){.desc{display:none}.cbody h3{font-size:15px}.cbody{padding:8px 10px 10px}}
+.empty{border:1px dashed var(--line);border-radius:18px;padding:28px;text-align:center;color:var(--mute)}
+.empty p{margin:0 0 12px}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;justify-content:center;gap:8px;height:42px;padding:0 16px;border-radius:12px;border:1px solid var(--line);background:var(--surf);font-weight:700;text-decoration:none;color:var(--text)}
+.btn.pri{background:var(--blue);border-color:var(--blue);color:var(--blue-ink)}
+.btn[disabled],.btn[aria-disabled="true"]{opacity:.45;cursor:not-allowed}
+.btn.sm{height:34px;padding:0 12px;font-size:14px;border-radius:10px}
+
+/* map */
+.mapwrap{display:grid;gap:14px}
+@media (min-width:960px){.mapwrap{grid-template-columns:minmax(0,1fr) 340px}}
+.mapbox{position:relative;background:var(--surf);border:1px solid var(--line);border-radius:18px;overflow:hidden}
+.mapbox svg{display:block;width:100%;height:auto;max-height:72vh}
+.mapctl{position:absolute;right:10px;top:10px;display:flex;flex-direction:column;gap:6px}
+.mapnote{font-size:13px;color:var(--mute);padding:10px 14px;border-top:1px solid var(--line)}
+.mk{cursor:pointer}
+.mk:focus-visible circle{stroke:var(--blue);stroke-width:4}
+.side{display:flex;flex-direction:column;gap:12px}
+.mini{background:var(--surf);border:1px solid var(--line);border-radius:16px;padding:14px}
+.mini h3{margin:0 0 4px;font:700 18px/1.2 var(--display)}
+.legend{display:flex;flex-wrap:wrap;gap:8px 12px;font-size:13px;color:var(--mute)}
+.legend span{display:flex;gap:6px;align-items:center}
+.legend i.sw{width:10px;height:10px;border-radius:50%;background:var(--c);display:inline-block}
+
+/* drawer */
+.scrim{position:fixed;inset:0;background:rgba(3,8,20,.6);z-index:40;display:none}
+.scrim.on{display:block}
+.sheet{position:fixed;z-index:41;background:var(--bg);border-left:1px solid var(--line);top:0;right:0;bottom:0;width:min(540px,100%);overflow:auto;transform:translateX(100%);transition:transform .22s ease;padding-top:env(safe-area-inset-top,0px);padding-bottom:calc(24px + env(safe-area-inset-bottom,0px))}
+.sheet.on{transform:none}
+@media (max-width:719px){.sheet{top:auto;left:0;width:100%;height:92%;border-left:0;border-top:1px solid var(--line);border-radius:20px 20px 0 0;transform:translateY(100%)}}
+@media (prefers-reduced-motion:reduce){.sheet{transition:none}}
+.sheet .hero{aspect-ratio:16/9;border-radius:0}
+.sheet .x{position:absolute;top:12px;right:12px;z-index:2;background:var(--bg)}
+.sheet .inner{padding:16px 18px}
+.sheet h2{font:800 30px/1.05 var(--display);letter-spacing:-.03em;margin:10px 0 4px}
+.badges{display:flex;flex-wrap:wrap;gap:6px}
+.actions{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin:16px 0}
+.actions .pri{grid-column:1/-1}
+dl.info{margin:0;display:grid;grid-template-columns:120px 1fr;gap:10px 14px;font-size:15px}
+dl.info dt{color:var(--mute)}
+dl.info dd{margin:0}
+.nv{color:var(--mute)}
+.attr-note{font-size:13px;color:var(--mute);margin-top:14px;border-top:1px solid var(--line);padding-top:12px}
+.formbox{display:grid;gap:10px;margin-top:12px;background:var(--surf);border:1px solid var(--line);border-radius:14px;padding:14px}
+.formbox label{display:grid;gap:4px;font-size:14px;color:var(--mute)}
+.formbox select,.formbox input,.formbox textarea{border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:9px 10px;color:var(--text)}
+h4.sec{font:700 18px/1.2 var(--display);margin:22px 0 10px}
+
+/* transport */
+.tgrid{display:grid;gap:16px}
+@media (min-width:960px){.tgrid{grid-template-columns:360px minmax(0,1fr)}}
+.stoplist{display:flex;flex-direction:column;gap:8px}
+.stop{display:flex;gap:12px;align-items:center;text-align:left;border:1px solid var(--line);background:var(--surf);border-radius:14px;padding:10px 12px;width:100%}
+.stop[aria-pressed="true"]{border-color:var(--blue);box-shadow:inset 0 0 0 1px var(--blue)}
+.stop .b{width:38px;height:38px;border-radius:10px;background:#2F7BFF;color:#fff;display:flex;align-items:center;justify-content:center;flex:none}
+.stop strong{display:block;font-size:15px}
+.stop small{color:var(--mute);font-size:13px}
+.stop .d{margin-left:auto;font:800 18px/1 var(--display);white-space:nowrap}
+table.dep{width:100%;border-collapse:collapse;font-size:15px}
+table.dep th{text-align:left;color:var(--mute);font-weight:400;font-size:13px;padding:6px 8px;border-bottom:1px solid var(--line)}
+table.dep td{padding:10px 8px;border-bottom:1px solid var(--line);vertical-align:top}
+.tw{overflow-x:auto}
+.rcode{display:inline-block;font:800 14px/1 var(--display);background:var(--blue);color:var(--blue-ink);padding:5px 8px;border-radius:7px}
+.big{font:800 26px/1 var(--display);letter-spacing:-.02em}
+.seq{list-style:none;margin:0;padding:0;position:relative}
+.seq li{position:relative;padding:0 0 16px 30px}
+.seq li::before{content:"";position:absolute;left:8px;top:6px;width:12px;height:12px;border-radius:50%;background:var(--bg);border:3px solid var(--blue)}
+.seq li::after{content:"";position:absolute;left:13px;top:20px;bottom:0;width:2px;background:var(--line)}
+.seq li:last-child::after{display:none}
+.seq li.here::before{background:var(--green);border-color:var(--green)}
+.seq button{border:0;background:none;padding:0;font-weight:700;text-align:left}
+.seq small{color:var(--mute);margin-left:6px}
+.routes{display:flex;flex-direction:column;gap:8px}
+.routebtn{display:flex;gap:10px;align-items:center;border:1px solid var(--line);background:var(--surf);border-radius:12px;padding:10px 12px;text-align:left;width:100%}
+.routebtn[aria-pressed="true"]{border-color:var(--blue)}
+.kv{display:grid;grid-template-columns:repeat(auto-fit,minmax(140px,1fr));gap:10px;margin:12px 0}
+.kv div{background:var(--surf2);border-radius:12px;padding:10px 12px}
+.kv small{display:block;color:var(--mute);font-size:12px}
+
+/* admin/profile */
+.panel{background:var(--surf);border:1px solid var(--line);border-radius:18px;padding:16px;margin-bottom:16px}
+.panel h2{font:800 24px/1.1 var(--display);margin:0 0 12px;letter-spacing:-.02em}
+table.adm{width:100%;border-collapse:collapse;font-size:14px;min-width:640px}
+table.adm th,table.adm td{padding:8px;border-bottom:1px solid var(--line);text-align:left}
+table.adm th{color:var(--mute);font-weight:400}
+table.adm select{border:1px solid var(--line);background:var(--bg);border-radius:8px;padding:4px 6px}
+.row{display:flex;flex-wrap:wrap;gap:10px;align-items:center}
+.field{display:grid;gap:4px;font-size:14px;color:var(--mute)}
+.field input,.field select{height:40px;border:1px solid var(--line);background:var(--bg);border-radius:10px;padding:0 10px;color:var(--text)}
+h1.pg{font:800 clamp(30px,5vw,48px)/1 var(--display);letter-spacing:-.035em;margin:6px 0 16px}
+
+/* bottom nav */
+nav.bottom{position:fixed;left:0;right:0;bottom:0;z-index:25;background:var(--bg);border-top:1px solid var(--line);display:none;padding-bottom:env(safe-area-inset-bottom,0px)}
+nav.bottom div{display:grid;grid-template-columns:repeat(5,1fr)}
+nav.bottom a{display:flex;flex-direction:column;align-items:center;gap:2px;padding:8px 0 10px;color:var(--mute);text-decoration:none;font-size:12px;font-weight:700}
+nav.bottom a[aria-current="page"]{color:var(--blue)}
+@media (max-width:759px){nav.bottom{display:block}.tabs{display:none}.bar{flex-wrap:wrap}.search{order:5;flex-basis:100%}.logo .tag{display:none}.hide-sm{display:none}}
+.tag{font:400 13px/1 var(--body);color:var(--mute);letter-spacing:0}
+.toast{position:fixed;left:50%;bottom:calc(84px + env(safe-area-inset-bottom,0px));transform:translateX(-50%);background:var(--text);color:var(--bg);padding:10px 16px;border-radius:12px;font-weight:700;z-index:60;display:none;max-width:90vw}
+.toast.on{display:block}
+footer.f{max-width:1280px;margin:0 auto;padding:0 16px 120px;color:var(--mute);font-size:13px}
+</style>
+</head>
+<body>
+<header class="top">
+  <div class="bar">
+    <a class="logo" href="#discover" aria-label="Twin City Go home">
+      <svg viewBox="0 0 34 20" aria-hidden="true"><line x1="6" y1="14" x2="28" y2="6" stroke="#3D8BFF" stroke-width="3" stroke-linecap="round"/><circle cx="6" cy="14" r="5" fill="#2BD67B"/><circle cx="28" cy="6" r="5" fill="#3D8BFF"/></svg>
+      <span>Twin City Go <span class="tag hide-sm">Everything around you. One place.</span></span>
+    </a>
+    <nav class="tabs" aria-label="Main">
+      <a href="#discover" data-tab="discover">Discover</a>
+      <a href="#transport" data-tab="transport">Transport</a>
+      <a href="#saved" data-tab="saved">Saved</a>
+      <a href="#admin" data-tab="admin">Admin</a>
+    </nav>
+    <div class="search" id="searchBox">
+      <i data-lucide="search" class="s-ico"></i>
+      <label class="sr" for="q">Search places</label>
+      <input id="q" type="search" autocomplete="off" placeholder="What are you looking for nearby?" aria-controls="sugg" aria-autocomplete="list">
+      <button class="clear" id="qClear" aria-label="Clear search"><i data-lucide="x"></i></button>
+      <div class="sugg" id="sugg" role="listbox"></div>
+    </div>
+    <div class="wrapRel" style="margin-left:auto">
+      <button class="ibtn" id="bellBtn" aria-label="Notifications" aria-expanded="false"><i data-lucide="bell"></i><span class="dot" id="bellDot"></span></button>
+      <div class="pop" id="bellPop"></div>
+    </div>
+    <button class="ibtn" id="themeBtn" aria-label="Switch light or dark theme"><i data-lucide="sun-moon"></i></button>
+    <a class="ibtn" href="#profile" aria-label="Profile"><i data-lucide="user-round"></i></a>
+  </div>
+</header>
+
+<main id="view"></main>
+<footer class="f">Prototype build. Map directions open Google Maps; all other data here is local demo data stored only in this browser.</footer>
+
+<nav class="bottom" aria-label="Main">
+  <div>
+    <a href="#discover" data-tab="discover"><i data-lucide="layout-grid"></i>Discover</a>
+    <a href="#map" data-tab="map"><i data-lucide="map"></i>Map</a>
+    <a href="#transport" data-tab="transport"><i data-lucide="bus"></i>Transport</a>
+    <a href="#saved" data-tab="saved"><i data-lucide="heart"></i>Saved</a>
+    <a href="#profile" data-tab="profile"><i data-lucide="user-round"></i>Profile</a>
+  </div>
+</nav>
+
+<div class="scrim" id="scrim"></div>
+<aside class="sheet" id="sheet" role="dialog" aria-modal="true" aria-labelledby="sheetTitle"></aside>
+<div class="toast" id="toast" role="status" aria-live="polite"></div>
+
+<script>
+/* ---------- storage ---------- */
+const store={
+  get(k,d){try{const v=localStorage.getItem('tcg:'+k);return v==null?d:JSON.parse(v)}catch(e){return d}},
+  set(k,v){try{localStorage.setItem('tcg:'+k,JSON.stringify(v))}catch(e){}}
+};
+
+/* ---------- config: anchors (coordinates unverified) ---------- */
+const ANCHORS={
+  krishna:{id:'krishna',name:'Krishna Hostel',area:'Dharwad',lat:15.4589,lng:75.0078,verified:false},
+  hubballi:{id:'hubballi',name:'Hubballi (demo anchor)',area:'Hubballi',lat:15.3647,lng:75.1240,verified:false},
+  custom:null
+};
+
+/* ---------- categories ---------- */
+const CATS={
+  mess:{label:'Mess',icon:'utensils',color:'#F5B83D',subs:['Veg','Non-veg','Monthly','Daily','Breakfast'],syn:['mess','meal','meals','tiffin','thali','food','breakfast','lunch','dinner']},
+  restaurants:{label:'Restaurants',icon:'chef-hat',color:'#FF8A65',subs:['Pure veg','Non-veg','Mixed menu','Café','Fast food','Budget'],syn:['restaurant','restaurants','food','eat','cafe','café','biryani','dosa']},
+  medical:{label:'Medical',icon:'cross',color:'#FF6B86',subs:['24-hour','Pharmacy','Hospital','Clinic','Diagnostics'],syn:['medical','pharmacy','chemist','hospital','clinic','doctor','medicine','diagnostic','lab']},
+  grocery:{label:'Grocery',icon:'shopping-basket',color:'#2BD67B',subs:['Kirana','Supermarket','Fruit & veg','Dairy'],syn:['grocery','kirana','vegetable','vegetables','fruit','fruits','milk','dairy','supermarket','store']},
+  transport:{label:'Transport',icon:'bus',color:'#3D8BFF',subs:['BRTS','City bus'],syn:['bus','stop','brts','route','transport','travel','cbt']},
+  religious:{label:'Religious',icon:'landmark',color:'#B98CFF',subs:['Temple','Masjid','Church','Math'],syn:['temple','masjid','mosque','church','math','mutt','religious','pray']},
+  tourist:{label:'Places',icon:'mountain',color:'#3FD0E0',subs:['Lake','Park','Viewpoint','Landmark','Campus'],syn:['tourist','lake','park','garden','visit','sightseeing','places','landmark']},
+  salons:{label:'Salons',icon:'scissors',color:'#FF9AD5',subs:["Men's","Women's",'Unisex'],syn:['salon','barber','haircut','parlour','parlor','beauty']},
+  rentals:{label:'Rentals',icon:'bike',color:'#A6E35F',subs:['Cycle','Scooter','Monthly'],syn:['rental','rent','bicycle','cycle','bike','scooter']},
+  sports:{label:'Sports',icon:'trophy',color:'#FFD23F',subs:['Cricket','Football','Badminton','Basketball','Gym'],syn:['sports','sport','ground','cricket','football','badminton','basketball','gym','play','court']},
+  study:{label:'Study',icon:'book-open',color:'#86B6FF',subs:['Library','Reading room','Co-working'],syn:['library','study','reading','coworking','co-working','wifi','wi-fi']}
+};
+
+/* ---------- data ----------
+   kind 'demo'  = invented listing, positioned by offset [east m, north m] from Krishna Hostel
+   kind 'real'  = real place name, coordinates approximate, no hours/ratings/phone (unverified)
+*/
+const RAW=[
+ {id:'m1',name:'Annapoorna Veg Mess',cat:'mess',tags:['Veg','Monthly','Daily','Breakfast'],kind:'demo',off:[220,-280],desc:'Home-style North Karnataka veg thali with a monthly plan.',price:'₹2,800–3,200 per month',hours:{o:'07:30',c:'21:30'},attrs:{'Food type':'Vegetarian','Meals':'Breakfast 7:30–9:30, lunch 12:30–2:30, dinner 7:30–9:30'},updated:'2026-11-02'},
+ {id:'m2',name:'Hostel Gate Tiffin Centre',cat:'mess',tags:['Veg','Daily','Breakfast'],kind:'demo',off:[60,-90],desc:'Idli, vada and upma counter for early classes.',price:'₹40–70 per meal',hours:{o:'06:30',c:'11:00'},attrs:{'Food type':'Vegetarian','Meals':'Breakfast only'},updated:'2026-10-28'},
+ {id:'m3',name:'Coastal Meals Mess',cat:'mess',tags:['Non-veg','Monthly','Daily'],kind:'demo',off:[-650,560],desc:'Fish and chicken meals; veg plate also served.',price:'₹3,500 per month',hours:{o:'12:00',c:'22:00'},attrs:{'Food type':'Non-vegetarian','Meals':'Lunch and dinner'},updated:'2026-10-20'},
+ {id:'m4',name:'Jolada Rotti Oota Mane',cat:'mess',tags:['Veg','Daily'],kind:'demo',off:[1200,-1050],desc:'Jowar rotti meals with ennegai and seasonal palya.',price:'₹90–120 per meal',hours:{o:'12:00',c:'22:30'},attrs:{'Food type':'Vegetarian','Meals':'Lunch and dinner'},updated:'2026-10-30'},
+
+ {id:'r1',name:'Udupi Sagar Tiffins',cat:'restaurants',tags:['Pure veg','Budget'],kind:'demo',off:[-480,520],desc:'Dosas, meals and filter coffee.',price:'₹100–200 for one',hours:{o:'07:00',c:'22:30'},attrs:{'Menu':'Vegetarian-only kitchen (demo value)'},updated:'2026-11-01'},
+ {id:'r2',name:'Spice Route Biryani House',cat:'restaurants',tags:['Non-veg'],kind:'demo',off:[900,800],desc:'Dum biryani and kebabs; parcel available.',price:'₹250–400 for one',hours:{o:'11:30',c:'23:00'},attrs:{'Menu':'Non-vegetarian'},updated:'2026-10-25'},
+ {id:'r3',name:'Campus Brew Café',cat:'restaurants',tags:['Café','Mixed menu'],kind:'demo',off:[300,330],desc:'Cold coffee, sandwiches and a quiet upstairs.',price:'₹150–300 for one',hours:{o:'09:00',c:'23:00'},attrs:{'Menu':'Veg and non-veg'},updated:'2026-11-03'},
+ {id:'r4',name:'Roll & Bowl',cat:'restaurants',tags:['Fast food','Mixed menu','Budget'],kind:'demo',off:[-2000,1300],desc:'Rolls, fried rice and late-night orders.',price:'₹120–250 for one',hours:{o:'12:00',c:'23:30'},attrs:{'Menu':'Veg and non-veg'},updated:'2026-10-18'},
+ {id:'r5',name:'Shree Krishna Bhavan',cat:'restaurants',tags:['Pure veg'],kind:'demo',off:[2600,-2800],desc:'Family restaurant with North and South Indian meals.',price:'₹200–350 for one',hours:{o:'07:00',c:'22:00'},attrs:{'Menu':'Vegetarian-only kitchen (demo value)'},updated:'2026-10-12'},
+
+ {id:'h1',name:'Campus Medicals',cat:'medical',tags:['Pharmacy','24-hour'],kind:'demo',off:[150,-200],desc:'Pharmacy with basic first-aid supplies.',hours:{all:true},updated:'2026-11-04'},
+ {id:'h2',name:'Lifeline Diagnostics',cat:'medical',tags:['Diagnostics'],kind:'demo',off:[-1300,-900],desc:'Blood tests and home sample collection.',hours:{o:'07:00',c:'20:00'},updated:'2026-10-22'},
+ {id:'h3',name:'Family Health Clinic',cat:'medical',tags:['Clinic'],kind:'demo',off:[700,-400],desc:'General physician consultations.',hours:{o:'10:00',c:'20:00'},price:'₹200 consultation',updated:'2026-10-29'},
+ {id:'h4',name:'SDM College of Medical Sciences & Hospital',cat:'medical',tags:['Hospital'],kind:'real',lat:15.4300,lng:75.0330,area:'Sattur, Dharwad',desc:'Multi-speciality teaching hospital on the Dharwad–Hubballi road.',updated:'2026-11-05'},
+ {id:'h5',name:'KIMS Hospital, Hubballi',cat:'medical',tags:['Hospital'],kind:'real',lat:15.3620,lng:75.1210,area:'Vidyanagar, Hubballi',desc:'Karnataka Institute of Medical Sciences, a large government hospital.',updated:'2026-11-05'},
+
+ {id:'g1',name:'Basaveshwar Kirana Stores',cat:'grocery',tags:['Kirana'],kind:'demo',off:[-200,150],desc:'Staples, snacks and toiletries.',hours:{o:'07:00',c:'22:00'},updated:'2026-11-01'},
+ {id:'g2',name:'FreshCart Supermarket',cat:'grocery',tags:['Supermarket'],kind:'demo',off:[1100,600],desc:'Packaged food, household goods and a small bakery.',hours:{o:'09:00',c:'22:00'},updated:'2026-10-27'},
+ {id:'g3',name:'Gate 2 Fruit & Veg Stall',cat:'grocery',tags:['Fruit & veg'],kind:'demo',off:[90,40],desc:'Seasonal fruit and vegetables by weight.',hours:{o:'06:00',c:'21:00'},updated:'2026-11-04'},
+ {id:'g4',name:'Daily Dairy Booth',cat:'grocery',tags:['Dairy'],kind:'demo',off:[-90,-60],desc:'Milk, curd and buttermilk in the morning.',hours:{o:'05:30',c:'10:00'},updated:'2026-11-03'},
+
+ {id:'st-gate',name:'Hostel Main Gate stop',cat:'transport',tags:['City bus'],kind:'demo',off:[40,-120],desc:'Pickup point for the demo city-bus routes.',updated:'2026-11-05'},
+ {id:'st-tapovan',name:'Tapovan Nagar stop',cat:'transport',tags:['City bus'],kind:'demo',off:[-900,-1200],desc:'Demo stop; real stop position not yet surveyed.',updated:'2026-11-05'},
+ {id:'st-dcbt',name:'Dharwad CBT',cat:'transport',tags:['BRTS','City bus'],kind:'real',lat:15.4597,lng:75.0103,area:'Dharwad',desc:'Dharwad central bus terminal.',updated:'2026-11-05'},
+ {id:'st-jubilee',name:'Jubilee Circle',cat:'transport',tags:['BRTS','City bus'],kind:'real',lat:15.4565,lng:75.0075,area:'Dharwad',desc:'BRTS stop at Jubilee Circle.',updated:'2026-11-05'},
+ {id:'st-tollnaka',name:'Toll Naka',cat:'transport',tags:['BRTS'],kind:'real',lat:15.4470,lng:75.0180,area:'Dharwad',desc:'BRTS corridor stop.',updated:'2026-11-05'},
+ {id:'st-vidyagiri',name:'Vidyagiri',cat:'transport',tags:['BRTS'],kind:'real',lat:15.4400,lng:75.0240,area:'Dharwad',desc:'BRTS corridor stop.',updated:'2026-11-05'},
+ {id:'st-sdm',name:'SDM / Sattur',cat:'transport',tags:['BRTS'],kind:'real',lat:15.4300,lng:75.0330,area:'Sattur, Dharwad',desc:'BRTS corridor stop near SDM.',updated:'2026-11-05'},
+ {id:'st-navanagar',name:'Navanagar',cat:'transport',tags:['BRTS'],kind:'real',lat:15.3990,lng:75.0700,area:'Navanagar, Hubballi',desc:'BRTS corridor stop.',updated:'2026-11-05'},
+ {id:'st-unkal',name:'Unkal Cross',cat:'transport',tags:['BRTS'],kind:'real',lat:15.3800,lng:75.1060,area:'Unkal, Hubballi',desc:'BRTS corridor stop near Unkal Lake.',updated:'2026-11-05'},
+ {id:'st-hosur',name:'Hosur',cat:'transport',tags:['BRTS'],kind:'real',lat:15.3600,lng:75.1250,area:'Hubballi',desc:'BRTS corridor stop.',updated:'2026-11-05'},
+ {id:'st-hcbt',name:'Hubballi CBT',cat:'transport',tags:['BRTS','City bus'],kind:'real',lat:15.3505,lng:75.1385,area:'Hubballi',desc:'Hubballi central bus terminal.',updated:'2026-11-05'},
+ {id:'st-ku',name:'Karnataka University gate',cat:'transport',tags:['City bus'],kind:'real',lat:15.4420,lng:74.9870,area:'Pavate Nagar, Dharwad',desc:'Stop at the university entrance.',updated:'2026-11-05'},
+
+ {id:'rl1',name:'Nuggikeri Hanuman Temple',cat:'religious',tags:['Temple'],kind:'real',lat:15.4210,lng:75.0230,area:'Nuggikeri, Dharwad',desc:'Hanuman temple beside Nuggikeri lake.',updated:'2026-11-05'},
+ {id:'rl2',name:'Chandramouleshwara Temple, Unkal',cat:'religious',tags:['Temple'],kind:'real',lat:15.3800,lng:75.1150,area:'Unkal, Hubballi',desc:'Chalukya-era stone temple.',updated:'2026-11-05'},
+ {id:'rl3',name:'Siddharoodha Math',cat:'religious',tags:['Math'],kind:'real',lat:15.3640,lng:75.1170,area:'Old Hubballi',desc:'Math and samadhi of Sri Siddharoodha Swami.',updated:'2026-11-05'},
+ {id:'rl4',name:'Neighbourhood Masjid',cat:'religious',tags:['Masjid'],kind:'demo',off:[-750,-300],desc:'Demo listing for the masjid filter.',updated:'2026-10-30'},
+ {id:'rl5',name:'Neighbourhood Church',cat:'religious',tags:['Church'],kind:'demo',off:[1500,900],desc:'Demo listing for the church filter.',updated:'2026-10-30'},
+
+ {id:'t1',name:'Unkal Lake',cat:'tourist',tags:['Lake','Park'],kind:'real',lat:15.3740,lng:75.1120,area:'Unkal, Hubballi',desc:'Large lake with a garden and evening walking path.',updated:'2026-11-05'},
+ {id:'t2',name:'Sadhankeri Park',cat:'tourist',tags:['Park','Lake'],kind:'real',lat:15.4685,lng:74.9950,area:'Dharwad',desc:'Lakeside park associated with poet Da. Ra. Bendre.',updated:'2026-11-05'},
+ {id:'t3',name:'Nrupatunga Betta',cat:'tourist',tags:['Viewpoint','Park'],kind:'real',lat:15.3880,lng:75.1260,area:'Hubballi',desc:'Hilltop viewpoint over Hubballi.',updated:'2026-11-05'},
+ {id:'t4',name:'Indira Gandhi Glass House',cat:'tourist',tags:['Park','Landmark'],kind:'real',lat:15.3530,lng:75.1290,area:'Hubballi',desc:'Glass house and garden in central Hubballi.',updated:'2026-11-05'},
+ {id:'t5',name:'Karnataka University campus',cat:'tourist',tags:['Campus','Landmark'],kind:'real',lat:15.4400,lng:74.9850,area:'Pavate Nagar, Dharwad',desc:'Wooded campus popular for morning walks.',updated:'2026-11-05'},
+
+ {id:'s1',name:'Fade Street Barbers',cat:'salons',tags:["Men's"],kind:'demo',off:[400,-150],desc:'Haircuts, beard trims and student pricing.',price:'₹80–250',hours:{o:'10:00',c:'21:00'},updated:'2026-11-02'},
+ {id:'s2',name:'Glow Unisex Salon',cat:'salons',tags:['Unisex'],kind:'demo',off:[-900,700],desc:'Haircuts, colour and skincare.',price:'₹150–800',hours:{o:'10:00',c:'20:30'},updated:'2026-10-24'},
+ {id:'s3',name:'Lavanya Beauty Parlour',cat:'salons',tags:["Women's"],kind:'demo',off:[1300,-200],desc:'Threading, haircuts and bridal bookings.',price:'₹200–1,200',hours:{o:'10:30',c:'20:00'},updated:'2026-10-19'},
+
+ {id:'v1',name:'PedalPoint Cycle Rentals',cat:'rentals',tags:['Cycle','Monthly'],kind:'demo',off:[250,250],desc:'Geared and single-speed cycles for campus commutes.',price:'₹20 per hour, ₹120 per day, ₹600 per month',hours:{o:'08:00',c:'20:00'},attrs:{'Vehicles':'Geared and single-speed cycles','Availability':'Not provided by operator'},updated:'2026-11-01'},
+ {id:'v2',name:'TwinRide Scooter Rentals',cat:'rentals',tags:['Scooter','Monthly'],kind:'demo',off:[-1800,-600],desc:'Scooters by the day or month; licence required.',price:'₹450 per day, ₹7,500 per month',hours:{o:'09:00',c:'19:00'},attrs:{'Vehicles':'110–125 cc scooters','Availability':'Not provided by operator'},updated:'2026-10-21'},
+
+ {id:'p1',name:'Yeligar Sports Center',cat:'sports',tags:[],kind:'demo',off:[-500,-700],desc:'Listed in the project brief. Position, facilities and pricing not yet verified.',updated:'2026-11-05'},
+ {id:'p2',name:'Hostel Cricket Ground',cat:'sports',tags:['Cricket','Football'],kind:'demo',off:[-120,180],desc:'Open ground used for evening cricket and football.',price:'Free for residents',attrs:{'Facilities':'Open ground, no floodlights'},updated:'2026-11-03'},
+ {id:'p3',name:'Shuttle Arena',cat:'sports',tags:['Badminton'],kind:'demo',off:[1600,-1300],desc:'Four wooden badminton courts.',price:'₹150 per court-hour',hours:{o:'06:00',c:'22:00'},attrs:{'Booking':'Walk-in or by phone','Facilities':'4 courts, changing room'},updated:'2026-10-26'},
+ {id:'p4',name:'Iron Den Gym',cat:'sports',tags:['Gym'],kind:'demo',off:[600,700],desc:'Free weights and cardio floor.',price:'₹900 per month',hours:{o:'05:30',c:'22:00'},updated:'2026-10-31'},
+ {id:'p5',name:'Open Basketball Court',cat:'sports',tags:['Basketball'],kind:'demo',off:[-1100,-1500],desc:'Concrete court, first come first served.',price:'Free',updated:'2026-10-15'},
+
+ {id:'l1',name:'Quiet Hours Reading Room',cat:'study',tags:['Reading room'],kind:'demo',off:[500,-600],desc:'Silent study hall with power at each desk.',price:'₹500 per month',hours:{o:'06:00',c:'23:00'},attrs:{'Wi-Fi':'Yes (demo value)','Facilities':'Power sockets, drinking water'},updated:'2026-11-02'},
+ {id:'l2',name:'Karnataka University Library',cat:'study',tags:['Library'],kind:'real',lat:15.4405,lng:74.9860,area:'Pavate Nagar, Dharwad',desc:'University library; access rules not verified.',updated:'2026-11-05'},
+ {id:'l3',name:'Desk & Chai Co-working',cat:'study',tags:['Co-working'],kind:'demo',off:[-1500,1100],desc:'Day passes with Wi-Fi and tea.',price:'₹199 per day',hours:{o:'08:00',c:'22:00'},attrs:{'Wi-Fi':'Yes (demo value)'},updated:'2026-10-23'}
+];
+
+/* demo timetables — not from NWKRTC */
+const ROUTES=[
+ {id:'brts',code:'BRTS-D',name:'Dharwad CBT to Hubballi CBT',kind:'BRTS',stops:['st-dcbt','st-jubilee','st-tollnaka','st-vidyagiri','st-sdm','st-navanagar','st-unkal','st-hosur','st-hcbt'],gaps:[0,3,4,3,4,9,8,5,5],first:'06:00',last:'22:00',every:10,days:'daily',fare:'₹10–35',transfer:'Connects with D1 and D2 at Jubilee Circle.'},
+ {id:'d1',code:'D1',name:'Hostel Main Gate to Dharwad CBT',kind:'City bus',stops:['st-gate','st-tapovan','st-jubilee','st-dcbt'],gaps:[0,6,8,4],first:'06:30',last:'21:30',every:30,days:'monsat',fare:'₹12',transfer:'Change at Jubilee Circle for BRTS-D to Hubballi.'},
+ {id:'d2',code:'D2',name:'Hostel Main Gate to Karnataka University',kind:'City bus',stops:['st-gate','st-jubilee','st-ku'],gaps:[0,7,12],first:'07:00',last:'20:00',every:45,days:'monsat',fare:'₹15',transfer:'No transfer needed.'}
+];
+ROUTES.forEach(r=>{let s=0;r.cum=r.gaps.map(g=>s+=g)});
+
+/* build places */
+const K=ANCHORS.krishna;
+const PLACES=RAW.map(p=>{
+  if(p.off){p.lat=K.lat+p.off[1]/111320;p.lng=K.lng+p.off[0]/(111320*Math.cos(K.lat*Math.PI/180));p.area=p.area||'Near Krishna Hostel'}
+  return p;
+});
+const byId=Object.fromEntries(PLACES.map(p=>[p.id,p]));
+
+/* ---------- state ---------- */
+const S={anchor:'krishna',cat:'all',sub:null,radius:store.get('radius',5000),sort:'near',mode:'feed',q:'',zoom:1,sel:null,stop:null,route:null,adminQ:'',adminSt:'all',reportFor:null,suggestOpen:false};
+let favs=new Set(store.get('favs',[]));
+let favRoutes=new Set(store.get('favRoutes',[]));
+let queue=store.get('queue',[]);
+let statusOv=store.get('status',{});
+let profile=store.get('profile',{name:'',college:'IIT Dharwad'});
+let recent=store.get('recent',[]);
+let noticeOff=store.get('noticeOff',false);
+let lastView='discover';
+const theme=store.get('theme',null); if(theme) document.documentElement.dataset.theme=theme;
+
+/* ---------- utils ---------- */
+const $=s=>document.querySelector(s);
+const esc=s=>String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]));
+const anchor=()=>ANCHORS[S.anchor]||ANCHORS.krishna;
+function dist(a,b){const R=6371000,t=Math.PI/180,dLa=(b.lat-a.lat)*t,dLo=(b.lng-a.lng)*t;const h=Math.sin(dLa/2)**2+Math.cos(a.lat*t)*Math.cos(b.lat*t)*Math.sin(dLo/2)**2;return 2*R*Math.asin(Math.sqrt(h))}
+function delta(a,b){return{dx:(b.lng-a.lng)*111320*Math.cos(a.lat*Math.PI/180),dy:(b.lat-a.lat)*111320}}
+const fmtD=m=>m<1000?Math.round(m/10)*10+' m':(m/1000).toFixed(m<10000?1:0)+' km';
+const toMin=s=>{const[h,m]=s.split(':').map(Number);return h*60+m};
+const nowMin=()=>{const d=new Date();return d.getHours()*60+d.getMinutes()};
+const hhmm=m=>{m=((m%1440)+1440)%1440;return String(Math.floor(m/60)).padStart(2,'0')+':'+String(m%60).padStart(2,'0')};
+function openState(p){const h=p.hours;if(!h)return null;if(h.all)return{open:true,label:'Open 24 hours'};const o=toMin(h.o),c=toMin(h.c),n=nowMin();const open=c>o?(n>=o&&n<c):(n>=o||n<c);return open?{open:true,label:'Open until '+h.c}:{open:false,label:'Closed, opens '+h.o}}
+const statusOf=p=>statusOv[p.id]||'unverified';
+const ST_LABEL={verified:'Verified',pending:'Pending verification',unverified:'Unverified',reported:'Reported',inactive:'Inactive'};
+const mapsSearch=p=>'https://www.google.com/maps/search/?api=1&query='+encodeURIComponent(p.kind==='real'?p.name+', '+p.area+', Karnataka':(p.tags[0]||CATS[p.cat].label)+' '+CATS[p.cat].label+' near Dharwad');
+const mapsDir=p=>'https://www.google.com/maps/dir/?api=1&travelmode=walking&destination='+encodeURIComponent(p.kind==='real'?p.name+', '+p.area+', Karnataka':p.lat.toFixed(5)+','+p.lng.toFixed(5));
+function toast(t){const el=$('#toast');el.textContent=t;el.classList.add('on');clearTimeout(toast.t);toast.t=setTimeout(()=>el.classList.remove('on'),2600)}
+function icons(){if(window.lucide&&lucide.createIcons)lucide.createIcons()}
+function saveAll(){store.set('favs',[...favs]);store.set('favRoutes',[...favRoutes]);store.set('queue',queue);store.set('status',statusOv);store.set('profile',profile);store.set('recent',recent);store.set('radius',S.radius)}
+
+/* ---------- search ---------- */
+const STOP=new Set(['near','nearby','me','krishna','hostel','find','a','an','the','to','for','in','shop','shops','place','places','any','around','good','best']);
+function parseQ(q){
+  const low=q.toLowerCase().trim();let openNow=false,s=low;
+  if(/open now/.test(s)){openNow=true;s=s.replace('open now','')}
+  return{openNow,tokens:s.split(/[\s,]+/).filter(t=>t&&!STOP.has(t))};
+}
+function hay(p){const c=CATS[p.cat];return [p.name,c.label,...c.syn,...p.tags,p.desc,p.area].join(' ').toLowerCase()}
+function matchQ(p,pq){
+  if(pq.openNow){const o=openState(p);if(!o||!o.open)return false}
+  const h=hay(p);
+  return pq.tokens.every(t=>{
+    if(t==='veg'||t==='vegetarian')return p.tags.includes('Veg')||p.tags.includes('Pure veg');
+    if(t==='nonveg'||t==='non-veg')return p.tags.includes('Non-veg');
+    if(t==='bus'&&p.cat==='transport')return true;
+    return h.includes(t);
+  });
+}
+
+/* ---------- query ---------- */
+function list(opts={}){
+  const a=anchor();const pq=parseQ(S.q);
+  let L=PLACES.filter(p=>statusOf(p)!=='inactive').map(p=>({p,d:dist(a,p)}));
+  if(!opts.ignoreRadius)L=L.filter(x=>x.d<=S.radius);
+  if(S.cat!=='all')L=L.filter(x=>x.p.cat===S.cat);
+  if(S.sub)L=L.filter(x=>x.p.tags.includes(S.sub));
+  if(S.q)L=L.filter(x=>matchQ(x.p,pq));
+  if(S.sort==='updated')L.sort((x,y)=>y.p.updated.localeCompare(x.p.updated)||x.d-y.d);
+  else if(S.sort==='rating')L.sort((x,y)=>(y.p.rating||0)-(x.p.rating||0)||x.d-y.d);
+  else L.sort((x,y)=>x.d-y.d);
+  return L;
+}
+
+/* ---------- pieces ---------- */
+function radar(p,d,big){
+  const a=anchor();const {dx,dy}=delta(a,p);const ang=Math.atan2(dy,dx);
+  const R=big?55:50;const f=Math.min(d/Math.max(S.radius,d,1),1);const r=Math.max(f*R,6);
+  const cx=110,cy=big?62:75;const x=cx+Math.cos(ang)*r,y=cy-Math.sin(ang)*r;
+  const c=CATS[p.cat].color;
+  return `<svg class="radar" viewBox="0 0 160 120" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+    <g fill="none" stroke="${c}" stroke-opacity=".35">
+      <circle cx="${cx}" cy="${cy}" r="${R/3}"/><circle cx="${cx}" cy="${cy}" r="${2*R/3}"/><circle cx="${cx}" cy="${cy}" r="${R}" stroke-dasharray="2 3"/>
+    </g>
+    <line x1="${cx}" y1="${cy}" x2="${x.toFixed(1)}" y2="${y.toFixed(1)}" stroke="${c}" stroke-width="1.5"/>
+    <rect x="${cx-3}" y="${cy-3}" width="6" height="6" fill="#3D8BFF" transform="rotate(45 ${cx} ${cy})"/>
+    <circle cx="${x.toFixed(1)}" cy="${y.toFixed(1)}" r="5.5" fill="${c}" stroke="#0B1A33" stroke-width="1.5"/>
+    <text x="${cx}" y="${cy-R-3}" text-anchor="middle" font-size="7" fill="${c}" opacity=".9">N</text>
+  </svg>`;
+}
+function kindBadge(p){
+  const st=statusOf(p);
+  let b=p.kind==='demo'?'<span class="badge demo">Demo</span>':'<span class="badge real" title="Real place; coordinates approximate">Real place</span>';
+  if(st==='reported')b+=' <span class="badge rep">Reported</span>';
+  else if(st==='verified')b+=' <span class="badge real">Verified</span>';
+  else if(st==='pending')b+=' <span class="badge st">Pending</span>';
+  return b;
+}
+function openHtml(p){
+  const o=openState(p);
+  if(!o)return '<span class="openst u">Hours not verified</span>';
+  return `<span class="openst ${o.open?'y':'n'}">${o.label}</span>`;
+}
+function card({p,d}){
+  const c=CATS[p.cat];
+  return `<article class="card" style="--c:${c.color}" data-open="${p.id}" tabindex="0" aria-label="${esc(p.name)}, ${c.label}, ${fmtD(d)} away">
+    <div class="art">${radar(p,d)}
+      <span class="ico"><i data-lucide="${c.icon}"></i></span>
+      <span class="badge ${p.kind==='demo'?'demo':'real'}">${p.kind==='demo'?'Demo':'Real place'}</span>
+      <span class="dist">${fmtD(d)}<small>from ${esc(anchor().name.replace(' (demo anchor)',''))}</small></span>
+    </div>
+    <div class="cbody">
+      <h3>${esc(p.name)}</h3>
+      <p class="meta">${c.label}${p.tags.length?', '+p.tags.slice(0,2).join(', '):''}</p>
+      <p class="desc">${esc(p.desc)}</p>
+      <div class="cfoot">${openHtml(p)}
+        <button class="save" data-fav="${p.id}" aria-pressed="${favs.has(p.id)}" aria-label="${favs.has(p.id)?'Remove from saved':'Save'} ${esc(p.name)}"><i data-lucide="heart"></i></button>
+      </div>
+    </div>
+  </article>`;
+}
+
+/* ---------- views ---------- */
+function notice(){
+  if(noticeOff)return '';
+  return `<div class="notice"><i data-lucide="info"></i><div>Prototype with demo data. Listings marked <strong>Demo</strong> are invented. <strong>Real place</strong> listings use real names with approximate coordinates and no hours or ratings. Hostel coordinates are unverified. Bus times are a demo timetable, not NWKRTC data.</div><button data-act="hideNotice" aria-label="Dismiss notice"><i data-lucide="x"></i></button></div>`;
+}
+function anchorPicker(){
+  const a=anchor();
+  return `<div class="place-head">
+    <h1><span class="near">Near</span>${esc(a.name)}</h1>
+    <div class="anchorpick"><i data-lucide="map-pin"></i><label class="sr" for="anchorSel">Change location</label>
+      <select id="anchorSel">
+        <option value="krishna" ${S.anchor==='krishna'?'selected':''}>Krishna Hostel, Dharwad</option>
+        <option value="hubballi" ${S.anchor==='hubballi'?'selected':''}>Hubballi (demo anchor)</option>
+        <option value="custom" ${S.anchor==='custom'?'selected':''}>Use my location</option>
+      </select></div>
+    ${a.verified?'':'<span class="unv"><i data-lucide="triangle-alert"></i>Coordinates unverified</span>'}
+  </div>`;
+}
+function controls(){
+  const subs=S.cat!=='all'?(CATS[S.cat].subs||[]):[];
+  return `
+  <div class="chips" role="toolbar" aria-label="Categories">
+    <button class="chip" data-cat="all" aria-pressed="${S.cat==='all'}">All</button>
+    ${Object.entries(CATS).map(([k,c])=>`<button class="chip" style="--c:${c.color}" data-cat="${k}" aria-pressed="${S.cat===k}"><span class="sw"></span>${c.label}</button>`).join('')}
+  </div>
+  ${subs.length?`<div class="chips sub" role="toolbar" aria-label="${CATS[S.cat].label} filters">
+    <button class="chip" data-sub="" aria-pressed="${!S.sub}">Any</button>
+    ${subs.map(s=>`<button class="chip" data-sub="${esc(s)}" aria-pressed="${S.sub===s}">${s==='24-hour'?'24-hour pharmacy':esc(s)}</button>`).join('')}
+  </div>`:''}
+  <div class="toolbar">
+    <label>Radius<select id="radiusSel">
+      ${[[500,'500 m'],[1000,'1 km'],[2000,'2 km'],[5000,'5 km'],[10000,'10 km'],[30000,'Whole twin city']].map(([v,l])=>`<option value="${v}" ${S.radius==v?'selected':''}>${l}</option>`).join('')}
+    </select></label>
+    <label>Sort<select id="sortSel">
+      <option value="near" ${S.sort==='near'?'selected':''}>Nearest first</option>
+      <option value="rating" ${S.sort==='rating'?'selected':''}>Highest rated</option>
+      <option value="popular" disabled>Most popular (no data yet)</option>
+      <option value="updated" ${S.sort==='updated'?'selected':''}>Recently updated</option>
+    </select></label>
+    <div class="seg" role="group" aria-label="View">
+      <button data-mode="feed" aria-pressed="${S.mode==='feed'}"><i data-lucide="layout-grid"></i>Feed</button>
+      <button data-mode="map" aria-pressed="${S.mode==='map'}"><i data-lucide="map"></i>Map</button>
+    </div>
+  </div>`;
+}
+function resultLine(n){
+  const parts=[`${n} place${n===1?'':'s'} within ${fmtD(S.radius)}`];
+  let tag=S.q?`<span class="qtag">“${esc(S.q)}”<button data-act="clearQ" aria-label="Clear search"><i data-lucide="x"></i></button></span>`:'';
+  let note='';
+  if(S.sort==='rating')note='No verified ratings yet, so this falls back to nearest first.';
+  if(S.sub==='24-hour')note='24-hour status shown here is a demo value until verified.';
+  return `<div class="resultline">${parts.join('')} ${tag} ${note?`<span>${note}</span>`:''}</div>`;
+}
+function emptyState(){
+  const next=[500,1000,2000,5000,10000,30000].find(r=>r>S.radius);
+  return `<div class="empty"><p>Nothing matches here${S.q?' for this search':''}.</p>
+    <div class="row" style="justify-content:center">
+    ${next?`<button class="btn sm" data-act="widen" data-r="${next}">Widen to ${fmtD(next)}</button>`:''}
+    ${S.q||S.sub||S.cat!=='all'?'<button class="btn sm" data-act="resetFilters">Clear filters</button>':''}
+    <button class="btn sm" data-act="suggest">Suggest a place</button></div></div>`;
+}
+function viewDiscover(){
+  const L=list();
+  let body;
+  if(S.mode==='map')body=mapView(L);
+  else body=L.length?`<div class="feed">${L.map(card).join('')}</div>`:emptyState();
+  return notice()+anchorPicker()+controls()+resultLine(L.length)+body+suggestForm();
+}
+function mapView(L){
+  const a=anchor();const sc=240/S.radius*S.zoom;let hidden=0;
+  const rings=[.25,.5,.75,1].map(f=>{const r=240*f*S.zoom;if(r>380)return'';return `<circle r="${r}" fill="none" stroke="var(--line)" ${f<1?'stroke-dasharray="3 5"':''}/><text x="${(r*0.707+4).toFixed(0)}" y="${(-r*0.707).toFixed(0)}" font-size="11" fill="var(--mute)">${fmtD(S.radius*f)}</text>`}).join('');
+  const mk=L.map(({p,d})=>{const {dx,dy}=delta(a,p);const x=dx*sc,y=-dy*sc;if(Math.abs(x)>255||Math.abs(y)>255){hidden++;return''}
+    const on=S.sel===p.id;return `<g class="mk" data-mk="${p.id}" transform="translate(${x.toFixed(1)},${y.toFixed(1)})" tabindex="0" role="button" aria-label="${esc(p.name)}, ${fmtD(d)}"><circle r="${on?11:7}" fill="${CATS[p.cat].color}" stroke="var(--bg)" stroke-width="2.5"/>${on?`<text y="-16" text-anchor="middle" font-size="12" font-weight="700" fill="var(--text)">${esc(p.name)}</text>`:''}</g>`}).join('');
+  const present=[...new Set(L.map(x=>x.p.cat))];
+  const sel=S.sel&&L.find(x=>x.p.id===S.sel);
+  return `<div class="mapwrap">
+    <div class="mapbox">
+      <svg viewBox="-260 -260 520 520" role="img" aria-label="Schematic map of places around ${esc(a.name)}">
+        ${rings}
+        <line x1="0" y1="-250" x2="0" y2="-232" stroke="var(--mute)"/><text x="6" y="-236" font-size="11" fill="var(--mute)">N</text>
+        ${mk}
+        <rect x="-7" y="-7" width="14" height="14" fill="#3D8BFF" stroke="var(--bg)" stroke-width="2.5" transform="rotate(45)"/>
+        <text y="24" text-anchor="middle" font-size="12" font-weight="700" fill="var(--text)">${esc(a.name)}</text>
+      </svg>
+      <div class="mapctl">
+        <button class="ibtn" data-act="zoomIn" aria-label="Zoom in"><i data-lucide="plus"></i></button>
+        <button class="ibtn" data-act="zoomOut" aria-label="Zoom out"><i data-lucide="minus"></i></button>
+        <button class="ibtn" data-act="zoomReset" aria-label="Reset zoom"><i data-lucide="locate"></i></button>
+      </div>
+      <div class="mapnote">Schematic view of demo coordinates${hidden?`; ${hidden} place${hidden>1?'s':''} outside this zoom`:''}. The full build swaps in Google Maps with the same filters.</div>
+    </div>
+    <div class="side">
+      ${sel?`<div class="mini" style="--c:${CATS[sel.p.cat].color}"><div class="badges">${kindBadge(sel.p)}</div><h3 style="margin-top:8px">${esc(sel.p.name)}</h3><p class="meta">${CATS[sel.p.cat].label}, ${fmtD(sel.d)} away</p><p style="font-size:14px;margin:6px 0 10px">${esc(sel.p.desc)}</p>${openHtml(sel.p)}<div class="row" style="margin-top:12px"><button class="btn sm" data-open="${sel.p.id}">View details</button><a class="btn sm pri" href="${mapsDir(sel.p)}" target="_blank" rel="noopener"><i data-lucide="navigation"></i>Directions</a></div></div>`
+      :`<div class="mini"><h3>Tap a marker</h3><p class="meta">Its details and a directions link appear here.</p></div>`}
+      <div class="mini"><div class="legend">${present.map(k=>`<span style="--c:${CATS[k].color}"><i class="sw"></i>${CATS[k].label}</span>`).join('')||'No places in range'}</div></div>
+    </div>
+  </div>`;
+}
+
+/* transport */
+function serves(stopId){return ROUTES.filter(r=>r.stops.includes(stopId))}
+function runsToday(r){return r.days==='daily'||new Date().getDay()!==0}
+function departures(stopId){
+  const n=nowMin();const out=[];
+  serves(stopId).forEach(r=>{
+    if(!runsToday(r))return;
+    const i=r.stops.indexOf(stopId);if(i===r.stops.length-1)return;
+    const off=r.cum[i];let c=0;
+    for(let t=toMin(r.first);t<=toMin(r.last)&&c<3;t+=r.every){const at=t+off;if(at>=n){out.push({r,at,wait:at-n});c++}}
+  });
+  return out.sort((x,y)=>x.at-y.at).slice(0,6);
+}
+function viewTransport(){
+  const a=anchor();
+  const stops=PLACES.filter(p=>p.cat==='transport'&&statusOf(p)!=='inactive').map(p=>({p,d:dist(a,p)})).sort((x,y)=>x.d-y.d);
+  if(!S.stop)S.stop=stops[0]&&stops[0].p.id;
+  const stop=byId[S.stop];
+  const deps=stop?departures(stop.id):[];
+  const route=S.route?ROUTES.find(r=>r.id===S.route):null;
+  const sv=stop?serves(stop.id):[];
+  return `${notice()}<h1 class="pg">Buses near ${esc(a.name)}</h1>
+  <div class="notice" style="border-color:var(--blue)"><i data-lucide="radio" style="color:var(--blue)"></i><div>No live bus feed is connected. Times below are <strong>scheduled departures from a demo timetable</strong>, not live arrivals. Check at the stop before you travel.</div></div>
+  <div class="tgrid">
+    <div>
+      <h4 class="sec" style="margin-top:0">Nearest stops</h4>
+      <div class="stoplist">${stops.slice(0,8).map(({p,d})=>`<button class="stop" data-stop="${p.id}" aria-pressed="${S.stop===p.id}"><span class="b"><i data-lucide="bus"></i></span><span><strong>${esc(p.name)}</strong><small>${serves(p.id).map(r=>r.code).join(', ')||'No routes in demo data'}${p.kind==='demo'?' (demo stop)':''}</small></span><span class="d">${fmtD(d)}</span></button>`).join('')}</div>
+    </div>
+    <div>
+      ${stop?`<div class="panel">
+        <div class="row" style="justify-content:space-between"><h2 style="margin:0">${esc(stop.name)}</h2><button class="btn sm" data-open="${stop.id}">Stop details</button></div>
+        <h4 class="sec">Next scheduled departures</h4>
+        ${deps.length?`<div class="tw"><table class="dep"><thead><tr><th>Route</th><th>Towards</th><th>Departs</th><th>Wait</th><th>Status</th></tr></thead><tbody>
+          ${deps.map((x,i)=>`<tr><td><span class="rcode">${x.r.code}</span></td><td>${esc(byId[x.r.stops.at(-1)].name)}</td><td>${i===0?`<span class="big">${hhmm(x.at)}</span>`:hhmm(x.at)}</td><td>${x.wait} min</td><td><span class="badge st">Scheduled, demo</span></td></tr>`).join('')}
+        </tbody></table></div>`:`<p class="nv">No more scheduled departures today from this stop${sv.some(r=>!runsToday(r))?' (some routes do not run on Sunday)':''}.</p>`}
+        <h4 class="sec">Routes at this stop</h4>
+        <div class="routes">${sv.map(r=>`<button class="routebtn" data-route="${r.id}" aria-pressed="${S.route===r.id}"><span class="rcode">${r.code}</span><span><strong>${esc(r.name)}</strong><br><small class="nv">Every ${r.every} min, ${r.first}–${r.last}, ${r.days==='daily'?'daily':'Mon–Sat'}</small></span></button>`).join('')||'<p class="nv">No routes in demo data.</p>'}</div>
+      </div>`:''}
+      ${route?routePanel(route,stop):''}
+    </div>
+  </div>`;
+}
+function routePanel(r,stop){
+  const total=r.cum.at(-1);
+  return `<div class="panel">
+    <div class="row" style="justify-content:space-between"><h2 style="margin:0"><span class="rcode">${r.code}</span> ${esc(r.name)}</h2>
+      <button class="btn sm" data-favroute="${r.id}" aria-pressed="${favRoutes.has(r.id)}"><i data-lucide="${favRoutes.has(r.id)?'bookmark-check':'bookmark'}"></i>${favRoutes.has(r.id)?'Saved':'Save route'}</button></div>
+    <div class="kv">
+      <div><small>From</small>${esc(byId[r.stops[0]].name)}</div>
+      <div><small>To</small>${esc(byId[r.stops.at(-1)].name)}</div>
+      <div><small>Journey</small>About ${total} min</div>
+      <div><small>Frequency</small>Every ${r.every} min</div>
+      <div><small>First and last</small>${r.first} and ${r.last}</div>
+      <div><small>Days</small>${r.days==='daily'?'Daily':'Monday to Saturday'}</div>
+      <div><small>Fare</small>${r.fare} (demo)</div>
+      <div><small>Transfers</small>${esc(r.transfer)}</div>
+    </div>
+    <h4 class="sec">Stop sequence</h4>
+    <ol class="seq">${r.stops.map((s,i)=>`<li class="${stop&&s===stop.id?'here':''}"><button data-open="${s}">${esc(byId[s].name)}</button><small>${i===0?'start':'+'+r.cum[i]+' min'}</small></li>`).join('')}</ol>
+    <p class="attr-note">Source: demo timetable written for this prototype. Last updated 2026-11-05. One direction shown.</p>
+  </div>`;
+}
+
+/* saved */
+function viewSaved(){
+  const a=anchor();
+  const L=[...favs].map(id=>byId[id]).filter(Boolean).map(p=>({p,d:dist(a,p)})).sort((x,y)=>x.d-y.d);
+  const R=ROUTES.filter(r=>favRoutes.has(r.id));
+  return `<h1 class="pg">Saved</h1>
+  ${L.length?`<div class="feed">${L.map(card).join('')}</div>`:`<div class="empty"><p>Tap the heart on any place to keep it here.</p><a class="btn sm" href="#discover">Browse places</a></div>`}
+  <h4 class="sec">Saved routes</h4>
+  ${R.length?`<div class="routes">${R.map(r=>`<button class="routebtn" data-goroute="${r.id}"><span class="rcode">${r.code}</span><span><strong>${esc(r.name)}</strong></span></button>`).join('')}</div>`:'<p class="nv">Save a bus route from the Transport tab.</p>'}`;
+}
+
+/* profile */
+function viewProfile(){
+  const rec=recent.map(id=>byId[id]).filter(Boolean);
+  const mine=queue.filter(q=>q.by==='you');
+  return `<h1 class="pg">Profile</h1>
+  <div class="panel"><h2>You</h2>
+    <div class="row">
+      <label class="field">Name<input id="pfName" value="${esc(profile.name)}" placeholder="Your name"></label>
+      <label class="field">College<input id="pfCollege" value="${esc(profile.college)}"></label>
+      <label class="field">Hostel<select id="pfHostel"><option value="krishna" ${S.anchor==='krishna'?'selected':''}>Krishna Hostel</option><option value="hubballi" ${S.anchor==='hubballi'?'selected':''}>Hubballi (demo anchor)</option></select></label>
+      <label class="field">Default radius<select id="pfRadius">${[[500,'500 m'],[1000,'1 km'],[2000,'2 km'],[5000,'5 km'],[10000,'10 km']].map(([v,l])=>`<option value="${v}" ${S.radius==v?'selected':''}>${l}</option>`).join('')}</select></label>
+    </div>
+    <div class="row" style="margin-top:12px"><button class="btn pri sm" data-act="saveProfile">Save profile</button><span class="nv" style="font-size:13px">Stored in this browser only. Sign-in comes with the backend.</span></div>
+  </div>
+  <div class="panel"><h2>Activity</h2>
+    <p>${favs.size} saved place${favs.size===1?'':'s'}, ${favRoutes.size} saved route${favRoutes.size===1?'':'s'}. <a href="#saved">Open saved</a></p>
+    <h4 class="sec">Recently viewed</h4>
+    ${rec.length?`<div class="routes">${rec.map(p=>`<button class="routebtn" data-open="${p.id}"><i data-lucide="${CATS[p.cat].icon}"></i><span>${esc(p.name)}</span></button>`).join('')}</div>`:'<p class="nv">Places you open show up here.</p>'}
+    <h4 class="sec">Your reports and suggestions</h4>
+    ${mine.length?`<div class="tw"><table class="dep"><thead><tr><th>Type</th><th>About</th><th>Status</th></tr></thead><tbody>${mine.map(q=>`<tr><td>${esc(q.type)}</td><td>${esc(q.subject)}</td><td><span class="badge st">${esc(q.state)}</span></td></tr>`).join('')}</tbody></table></div>`:'<p class="nv">Nothing submitted yet.</p>'}
+    <div class="row" style="margin-top:12px"><button class="btn sm" data-act="suggest">Suggest a place or route</button><a class="btn sm" href="#admin">Open admin</a></div>
+  </div>${suggestForm()}`;
+}
+
+/* admin */
+function viewAdmin(){
+  const q=S.adminQ.toLowerCase();
+  const rows=PLACES.filter(p=>(!q||p.name.toLowerCase().includes(q)||CATS[p.cat].label.toLowerCase().includes(q))&&(S.adminSt==='all'||statusOf(p)===S.adminSt));
+  const pending=queue.filter(x=>x.state==='Pending verification');
+  return `<h1 class="pg">Admin</h1>
+  <div class="panel"><h2>Verification queue (${pending.length})</h2>
+    ${pending.length?`<div class="tw"><table class="adm"><thead><tr><th>Submitted</th><th>Type</th><th>About</th><th>Details</th><th></th></tr></thead><tbody>
+    ${pending.map(x=>`<tr><td>${x.at.slice(0,10)}</td><td>${esc(x.type)}</td><td>${esc(x.subject)}</td><td>${esc(x.details)||'<span class="nv">None</span>'}</td><td class="row"><button class="btn sm" data-approve="${x.id}">Approve</button><button class="btn sm" data-reject="${x.id}">Reject</button></td></tr>`).join('')}
+    </tbody></table></div>`:'<p class="nv">No submissions waiting. Reports from place pages land here.</p>'}
+  </div>
+  <div class="panel"><h2>Places (${rows.length})</h2>
+    <div class="row" style="margin-bottom:10px">
+      <label class="field">Search<input id="admQ" value="${esc(S.adminQ)}" placeholder="Name or category"></label>
+      <label class="field">Status<select id="admSt"><option value="all">All</option>${Object.entries(ST_LABEL).map(([k,v])=>`<option value="${k}" ${S.adminSt===k?'selected':''}>${v}</option>`).join('')}</select></label>
+    </div>
+    <div class="tw"><table class="adm"><thead><tr><th>Name</th><th>Category</th><th>Source</th><th>Status</th><th>Last updated</th></tr></thead><tbody>
+    ${rows.map(p=>`<tr><td><button class="btn sm" style="border:0;background:none;padding:0;height:auto" data-open="${p.id}">${esc(p.name)}</button></td><td>${CATS[p.cat].label}</td><td>${p.kind==='demo'?'Demo':'Real, approx.'}</td><td><select data-setst="${p.id}" aria-label="Status for ${esc(p.name)}">${Object.entries(ST_LABEL).map(([k,v])=>`<option value="${k}" ${statusOf(p)===k?'selected':''}>${v}</option>`).join('')}</select></td><td>${p.updated}</td></tr>`).join('')}
+    </tbody></table></div>
+    <p class="attr-note">Status changes are stored in this browser. Hostels, routes and timetables get the same CRUD screens once FastAPI is wired in.</p>
+  </div>`;
+}
+
+/* forms */
+function suggestForm(){
+  if(!S.suggestOpen)return '';
+  return `<div class="formbox" id="suggestBox" style="margin-top:20px">
+    <h4 class="sec" style="margin:0">Suggest something missing</h4>
+    <label>What is it<select id="sgType"><option>New mess</option><option>Missing store or place</option><option>Bus route</option><option>Updated bus timings</option><option>Other</option></select></label>
+    <label>Name<input id="sgName" placeholder="For example, the tiffin stall behind Gate 2"></label>
+    <label>Details<textarea id="sgDet" rows="3" placeholder="Location, timings, prices you have checked"></textarea></label>
+    <div class="row"><button class="btn pri sm" data-act="submitSuggest">Send for verification</button><button class="btn sm" data-act="cancelSuggest">Cancel</button></div>
+  </div>`;
+}
+
+/* detail sheet */
+function detail(id){
+  const p=byId[id];if(!p)return;
+  recent=[id,...recent.filter(x=>x!==id)].slice(0,8);saveAll();
+  const c=CATS[p.cat];const d=dist(anchor(),p);const o=openState(p);
+  const isDemo=p.kind==='demo';
+  const sv=p.cat==='transport'?serves(p.id):[];
+  const deps=p.cat==='transport'?departures(p.id).slice(0,3):[];
+  const attrs=Object.entries(p.attrs||{});
+  $('#sheet').innerHTML=`
+    <button class="ibtn x" data-act="close" aria-label="Close"><i data-lucide="x"></i></button>
+    <div class="art hero" style="--c:${c.color}">${radar(p,d,true)}<span class="ico"><i data-lucide="${c.icon}"></i></span><span class="dist">${fmtD(d)}<small>from ${esc(anchor().name)}</small></span></div>
+    <div class="inner" style="--c:${c.color}">
+      <div class="badges">${kindBadge(p)}<span class="badge st">${ST_LABEL[statusOf(p)]}</span></div>
+      <h2 id="sheetTitle">${esc(p.name)}</h2>
+      <p class="meta">${c.label}${p.tags.length?', '+p.tags.join(', '):''}</p>
+      <p>${esc(p.desc)}</p>
+      <div class="actions">
+        <a class="btn pri" href="${mapsDir(p)}" target="_blank" rel="noopener"><i data-lucide="navigation"></i>Get directions</a>
+        <a class="btn" href="${mapsSearch(p)}" target="_blank" rel="noopener"><i data-lucide="map-pin"></i>Open in Google Maps</a>
+        ${p.phone?`<a class="btn" href="tel:${esc(p.phone)}"><i data-lucide="phone"></i>Call</a>`:`<button class="btn" disabled title="No verified phone number"><i data-lucide="phone"></i>Call</button>`}
+        <button class="btn" data-fav="${p.id}" aria-pressed="${favs.has(p.id)}"><i data-lucide="heart"></i>${favs.has(p.id)?'Saved':'Save'}</button>
+        <button class="btn" data-act="share" data-id="${p.id}"><i data-lucide="share-2"></i>Share</button>
+        <button class="btn" data-act="report" data-id="${p.id}"><i data-lucide="flag"></i>Report incorrect info</button>
+      </div>
+      ${isDemo?'<p class="attr-note" style="margin-top:0;border:0;padding:0">Demo listing: Google Maps opens a nearby category search, and directions point to the demo coordinates.</p>':''}
+      <div id="reportSlot"></div>
+      <dl class="info">
+        <dt>Address</dt><dd>${isDemo?'<span class="nv">Demo listing, no real address</span>':esc(p.area)+'<br><span class="nv">Street address not verified</span>'}</dd>
+        <dt>Distance</dt><dd>${fmtD(d)} from ${esc(anchor().name)} in a straight line</dd>
+        <dt>Hours</dt><dd>${o?`${p.hours.all?'24 hours':p.hours.o+' to '+p.hours.c}, <span class="openst ${o.open?'y':'n'}">${o.label}</span>${isDemo?' <span class="nv">(demo value)</span>':''}`:'<span class="nv">Not verified</span>'}</dd>
+        <dt>Phone</dt><dd>${p.phone?esc(p.phone):'<span class="nv">Not available</span>'}</dd>
+        <dt>Price</dt><dd>${p.price?esc(p.price)+(isDemo?' <span class="nv">(demo value)</span>':''):'<span class="nv">Not available</span>'}</dd>
+        <dt>Rating</dt><dd>${p.rating?p.rating:'<span class="nv">No verified rating</span>'}</dd>
+        ${attrs.map(([k,v])=>`<dt>${esc(k)}</dt><dd>${esc(v)}</dd>`).join('')}
+        ${sv.length?`<dt>Routes</dt><dd>${sv.map(r=>`<span class="rcode">${r.code}</span>`).join(' ')}</dd>`:''}
+        ${p.cat==='transport'?`<dt>Next departures</dt><dd>${deps.length?deps.map(x=>`${x.r.code} at ${hhmm(x.at)} (${x.wait} min)`).join('<br>')+'<br><span class="nv">Scheduled, demo timetable</span>':'<span class="nv">None scheduled for the rest of today</span>'}</dd>`:''}
+        <dt>Source</dt><dd>${isDemo?'Demo data written for this prototype':'Place name is real; coordinates approximate'}</dd>
+        <dt>Last updated</dt><dd>${p.updated}</dd>
+      </dl>
+      <p class="attr-note">No photo shown. The full build loads Google Place Photos through the backend with author attribution, and falls back to this direction card when a place has none.</p>
+    </div>`;
+  $('#scrim').classList.add('on');$('#sheet').classList.add('on');icons();
+  setTimeout(()=>{const x=$('#sheet .x');x&&x.focus()},50);
+}
+function closeSheet(){
+  $('#scrim').classList.remove('on');$('#sheet').classList.remove('on');
+  if(location.hash.startsWith('#place-'))history.replaceState(null,'','#'+lastView);
+}
+function reportForm(id){
+  $('#reportSlot').innerHTML=`<div class="formbox"><label>What is wrong<select id="rpType"><option>Wrong location</option><option>Wrong hours</option><option>Permanently closed</option><option>Wrong category or food type</option><option>Other</option></select></label>
+  <label>Details<textarea id="rpDet" rows="3" placeholder="What you saw and when"></textarea></label>
+  <div class="row"><button class="btn pri sm" data-act="submitReport" data-id="${id}">Send report</button><button class="btn sm" data-act="cancelReport">Cancel</button></div></div>`;
+  $('#rpType').focus();
+}
+
+/* ---------- render + routing ---------- */
+function render(){
+  const h=location.hash.slice(1)||'discover';
+  if(h.startsWith('place-')){const id=h.slice(6);if(byId[id]){if(!$('#view').innerHTML)rerender();detail(id);return}}
+  $('#scrim').classList.remove('on');$('#sheet').classList.remove('on');
+  if(h==='map'){S.mode='map';renderView('discover','map')}
+  else{if(h==='discover'&&renderView.prev==='map')S.mode='feed';renderView(['discover','transport','saved','profile','admin'].includes(h)?h:'discover')}
+}
+function renderView(v,tab){
+  lastView=tab||v;renderView.prev=lastView;
+  const fn={discover:viewDiscover,transport:viewTransport,saved:viewSaved,profile:viewProfile,admin:viewAdmin}[v];
+  $('#view').innerHTML=fn();
+  const cur=(v==='discover'&&S.mode==='map')?'map':v;
+  document.querySelectorAll('[data-tab]').forEach(a=>{const on=a.dataset.tab===cur||(cur==='map'&&a.dataset.tab==='discover'&&a.closest('.tabs'));if(on)a.setAttribute('aria-current','page');else a.removeAttribute('aria-current')});
+  bell();icons();
+}
+function rerender(){renderView(lastView==='map'?'discover':lastView,lastView==='map'?'map':undefined)}
+
+function bell(){
+  const pend=queue.filter(q=>q.state==='Pending verification').length;
+  $('#bellPop').innerHTML=`<p><strong>Bus times</strong> are from a demo timetable. Live tracking needs a verified operator feed.</p><p>${pend?`${pend} submission${pend>1?'s':''} waiting for verification. <a href="#admin">Review</a>`:'No submissions waiting for verification.'}</p><p>${favs.size} saved place${favs.size===1?'':'s'}.</p>`;
+}
+
+/* ---------- events ---------- */
+document.addEventListener('click',e=>{
+  const t=e.target.closest('button,a,[data-open],[data-mk],article');if(!t)return;
+  const ds=t.dataset;
+  if(ds.fav){e.stopPropagation();const id=ds.fav;favs.has(id)?favs.delete(id):favs.add(id);saveAll();toast(favs.has(id)?'Saved':'Removed from saved');if($('#sheet').classList.contains('on'))detail(id);rerender();return}
+  if(ds.open){e.preventDefault();location.hash='place-'+ds.open;return}
+  if(ds.mk){S.sel=ds.mk;rerender();return}
+  if(ds.cat){S.cat=ds.cat;S.sub=null;S.sel=null;rerender();return}
+  if(ds.sub!==undefined){S.sub=ds.sub||null;rerender();return}
+  if(ds.mode){S.mode=ds.mode;history.replaceState(null,'','#'+(ds.mode==='map'?'map':'discover'));rerender();return}
+  if(ds.stop){S.stop=ds.stop;S.route=null;rerender();return}
+  if(ds.route){S.route=S.route===ds.route?null:ds.route;rerender();return}
+  if(ds.goroute){const r=ROUTES.find(x=>x.id===ds.goroute);S.stop=r.stops[0];S.route=r.id;location.hash='transport';return}
+  if(ds.favroute){const id=ds.favroute;favRoutes.has(id)?favRoutes.delete(id):favRoutes.add(id);saveAll();toast(favRoutes.has(id)?'Route saved':'Route removed');rerender();return}
+  if(ds.approve||ds.reject){const x=queue.find(q=>q.id===(ds.approve||ds.reject));x.state=ds.approve?'Approved':'Rejected';if(x.placeId&&statusOv[x.placeId]==='reported'){statusOv[x.placeId]=ds.approve?'pending':'unverified'}saveAll();toast(ds.approve?'Approved':'Rejected');rerender();return}
+  switch(ds.act){
+    case 'close':closeSheet();break;
+    case 'hideNotice':noticeOff=true;store.set('noticeOff',true);rerender();break;
+    case 'clearQ':setQ('');break;
+    case 'widen':S.radius=+ds.r;saveAll();rerender();break;
+    case 'resetFilters':S.cat='all';S.sub=null;setQ('');break;
+    case 'zoomIn':S.zoom=Math.min(S.zoom*1.5,8);rerender();break;
+    case 'zoomOut':S.zoom=Math.max(S.zoom/1.5,.5);rerender();break;
+    case 'zoomReset':S.zoom=1;rerender();break;
+    case 'suggest':S.suggestOpen=true;closeSheet();if(!['discover','profile'].includes(lastView))location.hash='discover';else rerender();setTimeout(()=>{const b=$('#suggestBox');b&&b.scrollIntoView({behavior:'smooth',block:'center'});$('#sgName')&&$('#sgName').focus()},60);break;
+    case 'cancelSuggest':S.suggestOpen=false;rerender();break;
+    case 'submitSuggest':{const n=$('#sgName').value.trim();if(!n){toast('Add a name first');$('#sgName').focus();break}
+      queue.unshift({id:'q'+Date.now(),type:$('#sgType').value,subject:n,details:$('#sgDet').value.trim(),state:'Pending verification',by:'you',at:new Date().toISOString()});S.suggestOpen=false;saveAll();toast('Sent for verification');rerender();break}
+    case 'report':reportForm(ds.id);break;
+    case 'cancelReport':$('#reportSlot').innerHTML='';break;
+    case 'submitReport':{const p=byId[ds.id];queue.unshift({id:'q'+Date.now(),placeId:p.id,type:'Report: '+$('#rpType').value,subject:p.name,details:$('#rpDet').value.trim(),state:'Pending verification',by:'you',at:new Date().toISOString()});statusOv[p.id]='reported';saveAll();toast('Report sent for verification');detail(p.id);rerender();break}
+    case 'share':{const p=byId[ds.id];const url=location.href.split('#')[0]+'#place-'+p.id;
+      (async()=>{try{if(navigator.share){await navigator.share({title:p.name,text:p.name+' on Twin City Go',url});return}}catch(err){if(err&&err.name==='AbortError')return}
+        try{await navigator.clipboard.writeText(url);toast('Link copied')}catch(err){toast('Copy this link: '+url)}})();break}
+    case 'saveProfile':profile.name=$('#pfName').value.trim();profile.college=$('#pfCollege').value.trim();S.anchor=$('#pfHostel').value;S.radius=+$('#pfRadius').value;saveAll();toast('Profile saved');rerender();break;
+  }
+});
+document.addEventListener('keydown',e=>{
+  if(e.key==='Escape'&&$('#sheet').classList.contains('on'))closeSheet();
+  if((e.key==='Enter'||e.key===' ')&&e.target.matches('article[data-open],g[data-mk]')){e.preventDefault();e.target.dispatchEvent(new MouseEvent('click',{bubbles:true}))}
+});
+$('#scrim').addEventListener('click',closeSheet);
+document.addEventListener('change',e=>{
+  const t=e.target;
+  if(t.id==='radiusSel'){S.radius=+t.value;S.zoom=1;saveAll();rerender()}
+  else if(t.id==='sortSel'){S.sort=t.value;rerender()}
+  else if(t.id==='anchorSel'){setAnchor(t.value)}
+  else if(t.id==='admSt'){S.adminSt=t.value;rerender()}
+  else if(t.dataset.setst){const v=t.value;if(v==='unverified')delete statusOv[t.dataset.setst];else statusOv[t.dataset.setst]=v;saveAll();toast('Status set to '+ST_LABEL[v])}
+});
+document.addEventListener('input',e=>{
+  if(e.target.id==='admQ'){S.adminQ=e.target.value;clearTimeout(admT);admT=setTimeout(()=>{rerender();const i=$('#admQ');i.focus();i.setSelectionRange(i.value.length,i.value.length)},250)}
+});
+let admT;
+
+function setAnchor(v){
+  if(v!=='custom'){S.anchor=v;S.sel=null;S.stop=null;S.route=null;rerender();return}
+  if(!navigator.geolocation){toast('Location is not available here. Pick a hostel instead.');rerender();return}
+  toast('Finding your location…');
+  try{navigator.geolocation.getCurrentPosition(pos=>{ANCHORS.custom={id:'custom',name:'Your location',area:'',lat:pos.coords.latitude,lng:pos.coords.longitude,verified:true};S.anchor='custom';S.sel=null;S.stop=null;rerender();toast('Using your location')},
+    ()=>{toast('Location access was blocked. Pick a hostel instead.');rerender()},{timeout:10000,maximumAge:60000})}catch(err){toast('Location access was blocked. Pick a hostel instead.');rerender()}
+}
+
+/* search box */
+const qEl=$('#q'),sugg=$('#sugg');let qT,hl=-1;
+function setQ(v){S.q=v;qEl.value=v;$('#searchBox').classList.toggle('has',!!v);sugg.classList.remove('on');if(lastView!=='discover'&&lastView!=='map')location.hash='discover';else rerender()}
+qEl.addEventListener('input',()=>{
+  $('#searchBox').classList.toggle('has',!!qEl.value);
+  clearTimeout(qT);qT=setTimeout(()=>{
+    const v=qEl.value.trim();hl=-1;if(!v){sugg.classList.remove('on');if(S.q){S.q='';rerender()}return}
+    const pq=parseQ(v);const a=anchor();
+    const cats=Object.entries(CATS).filter(([k,c])=>pq.tokens.some(t=>c.syn.some(s=>s.startsWith(t))||c.label.toLowerCase().startsWith(t))).slice(0,3);
+    const ps=PLACES.filter(p=>statusOf(p)!=='inactive'&&matchQ(p,pq)).map(p=>({p,d:dist(a,p)})).sort((x,y)=>x.d-y.d).slice(0,6);
+    sugg.innerHTML=`<button role="option" data-sq="${esc(v)}"><i data-lucide="search"></i>Search “${esc(v)}”<small>${ps.length} match${ps.length===1?'':'es'}</small></button>`+
+      cats.map(([k,c])=>`<button role="option" data-scat="${k}"><i data-lucide="${c.icon}"></i>All ${c.label.toLowerCase()}<small>category</small></button>`).join('')+
+      ps.map(({p,d})=>`<button role="option" data-sopen="${p.id}"><i data-lucide="${CATS[p.cat].icon}"></i>${esc(p.name)}<small>${fmtD(d)}</small></button>`).join('');
+    sugg.classList.add('on');icons();
+  },200);
+});
+qEl.addEventListener('keydown',e=>{
+  const items=[...sugg.querySelectorAll('button')];
+  if(e.key==='ArrowDown'||e.key==='ArrowUp'){if(!items.length)return;e.preventDefault();hl=(hl+(e.key==='ArrowDown'?1:-1)+items.length)%items.length;items.forEach((b,i)=>b.classList.toggle('hl',i===hl))}
+  else if(e.key==='Enter'){e.preventDefault();if(hl>=0&&items[hl])items[hl].click();else setQ(qEl.value.trim())}
+  else if(e.key==='Escape'){sugg.classList.remove('on')}
+});
+sugg.addEventListener('click',e=>{
+  const b=e.target.closest('button');if(!b)return;e.stopPropagation();
+  if(b.dataset.sq!==undefined)setQ(b.dataset.sq);
+  else if(b.dataset.scat){S.cat=b.dataset.scat;S.sub=null;setQ('')}
+  else if(b.dataset.sopen){sugg.classList.remove('on');location.hash='place-'+b.dataset.sopen}
+});
+$('#qClear').addEventListener('click',()=>setQ(''));
+document.addEventListener('click',e=>{if(!e.target.closest('#searchBox'))sugg.classList.remove('on');if(!e.target.closest('#bellBtn,#bellPop')){$('#bellPop').classList.remove('on');$('#bellBtn').setAttribute('aria-expanded','false')}});
+$('#bellBtn').addEventListener('click',()=>{const on=$('#bellPop').classList.toggle('on');$('#bellBtn').setAttribute('aria-expanded',on);$('#bellDot').style.display='none'});
+$('#themeBtn').addEventListener('click',()=>{
+  const cur=document.documentElement.dataset.theme||(matchMedia('(prefers-color-scheme: light)').matches?'light':'dark');
+  const nx=cur==='dark'?'light':'dark';document.documentElement.dataset.theme=nx;store.set('theme',nx);
+});
+
+window.addEventListener('hashchange',render);
+render();
+</script>
+</body>
+</html>

@@ -1,0 +1,835 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>DH Transit — Dharwad↔Hubli Transit Guide</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com" />
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800;900&display=swap" rel="stylesheet" />
+  <link href="https://fonts.googleapis.com/icon?family=Material+Icons+Round" rel="stylesheet" />
+  <style>
+    /* ───────── Reset & Variables ───────── */
+    *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
+    :root{
+      --bg:#0a0a0f;--surface:#14141f;--card:#1c1c2e;--border:#2a2a40;
+      --accent:#6c5ce7;--accent2:#00cec9;--accent3:#fd79a8;--accent4:#fdcb6e;
+      --text:#e8e8f0;--text2:#a0a0b8;--grad1:linear-gradient(135deg,#6c5ce7,#00cec9);
+      --grad2:linear-gradient(135deg,#fd79a8,#fdcb6e);
+      --radius:16px;--shadow:0 8px 32px rgba(0,0,0,.45);
+      --font:'Inter',system-ui,sans-serif;
+    }
+    html{scroll-behavior:smooth;font-size:16px}
+    body{font-family:var(--font);background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+    a{color:inherit;text-decoration:none}
+    img{display:block;max-width:100%}
+    button{cursor:pointer;border:none;font-family:var(--font)}
+
+    /* ───────── Utility ───────── */
+    .container{max-width:520px;margin:0 auto;padding:0 16px}
+    .section-title{font-size:1.15rem;font-weight:700;margin:24px 0 12px;display:flex;align-items:center;gap:8px}
+    .section-title .material-icons-round{font-size:1.3rem;color:var(--accent)}
+    .badge{display:inline-block;padding:3px 10px;border-radius:20px;font-size:.7rem;font-weight:600;letter-spacing:.3px}
+    .badge-live{background:#e74c3c;color:#fff;animation:pulse 1.6s infinite}
+    .badge-route{background:var(--accent);color:#fff}
+    @keyframes pulse{0%,100%{opacity:1}50%{opacity:.5}}
+
+    /* ───────── Top App Bar ───────── */
+    .app-bar{position:sticky;top:0;z-index:100;background:rgba(10,10,15,.85);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-bottom:1px solid var(--border);padding:12px 16px;display:flex;align-items:center;justify-content:space-between}
+    .app-bar .logo{display:flex;align-items:center;gap:8px}
+    .app-bar .logo span.icon{font-size:1.6rem;background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .app-bar .logo h1{font-size:1.1rem;font-weight:800;background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .app-bar .logo small{font-size:.6rem;color:var(--text2);display:block;margin-top:-2px;-webkit-text-fill-color:var(--text2)}
+    .app-bar-actions{display:flex;gap:8px}
+    .app-bar-actions button{background:var(--card);color:var(--text);border-radius:50%;width:36px;height:36px;display:grid;place-items:center;font-size:1.15rem;border:1px solid var(--border);transition:.2s}
+    .app-bar-actions button:hover{background:var(--accent);border-color:var(--accent);color:#fff}
+
+    /* ───────── Hero / Route Banner ───────── */
+    .hero{position:relative;margin:16px 0;border-radius:var(--radius);overflow:hidden;background:var(--card);border:1px solid var(--border)}
+    .hero-img{width:100%;height:200px;object-fit:cover}
+    .hero-gradient{padding:20px;background:linear-gradient(135deg,rgba(108,92,231,.25),rgba(0,206,201,.15))}
+    .hero h2{font-size:1.3rem;font-weight:800;line-height:1.3}
+    .hero h2 .highlight{background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .hero p{color:var(--text2);font-size:.82rem;margin-top:6px;line-height:1.5}
+    .hero-badges{display:flex;gap:6px;margin-top:12px;flex-wrap:wrap}
+    .route-chip{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.07);border:1px solid var(--border);border-radius:20px;padding:5px 12px;font-size:.72rem;font-weight:600}
+    .route-chip .material-icons-round{font-size:.95rem;color:var(--accent2)}
+
+    /* ───────── Tab Navigation ───────── */
+    .tabs{display:flex;gap:4px;margin-top:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
+    .tabs::-webkit-scrollbar{display:none}
+    .tab{padding:10px 18px;border-radius:12px;font-size:.78rem;font-weight:600;white-space:nowrap;background:var(--card);border:1px solid var(--border);color:var(--text2);transition:.25s}
+    .tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+
+    /* ───────── Stories / IG-Style Circles ───────── */
+    .stories-row{display:flex;gap:14px;padding:8px 0 0;overflow-x:auto;scrollbar-width:none}
+    .stories-row::-webkit-scrollbar{display:none}
+    .story{display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0}
+    .story-ring{width:68px;height:68px;border-radius:50%;padding:3px;background:var(--grad2)}
+    .story-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid var(--bg)}
+    .story span{font-size:.65rem;color:var(--text2);max-width:68px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
+
+    /* ───────── Feed Cards ───────── */
+    .feed{display:flex;flex-direction:column;gap:16px;padding-bottom:100px}
+    .feed-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:transform .2s}
+    .feed-card:hover{transform:translateY(-2px)}
+    .feed-card-header{display:flex;align-items:center;padding:12px 14px;gap:10px}
+    .feed-card-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0}
+    .feed-card-header .info{flex:1}
+    .feed-card-header .info .name{font-size:.82rem;font-weight:700}
+    .feed-card-header .info .loc{font-size:.68rem;color:var(--text2)}
+    .feed-card-img{width:100%;aspect-ratio:4/3;object-fit:cover;background:var(--surface)}
+    .feed-card-body{padding:14px}
+    .feed-card-body .caption{font-size:.82rem;line-height:1.55;color:var(--text)}
+    .feed-card-body .caption strong{color:var(--accent2)}
+    .feed-card-actions{display:flex;gap:16px;padding:0 14px 12px}
+    .feed-card-actions button{background:none;color:var(--text2);font-size:1.2rem;display:flex;align-items:center;gap:4px;transition:.2s}
+    .feed-card-actions button span.count{font-size:.75rem;font-weight:600}
+    .feed-card-actions button:hover{color:var(--accent3)}
+    .feed-card-actions button.liked{color:var(--accent3)}
+    .feed-card-tags{display:flex;gap:6px;padding:0 14px 14px;flex-wrap:wrap}
+    .feed-card-tags span{font-size:.65rem;color:var(--accent);background:rgba(108,92,231,.12);padding:3px 8px;border-radius:8px}
+
+    /* ───────── Reels Section ───────── */
+    .reels-row{display:flex;gap:12px;overflow-x:auto;scrollbar-width:none;-webkit-overflow-scrolling:touch}
+    .reels-row::-webkit-scrollbar{display:none}
+    .reel{position:relative;width:170px;height:300px;border-radius:var(--radius);overflow:hidden;flex-shrink:0;border:1px solid var(--border)}
+    .reel-bg{width:100%;height:100%;object-fit:cover}
+    .reel-overlay{position:absolute;inset:0;background:linear-gradient(transparent 30%,rgba(0,0,0,.8));display:flex;flex-direction:column;justify-content:flex-end;padding:14px}
+    .reel-overlay .reel-title{font-size:.78rem;font-weight:700;line-height:1.35}
+    .reel-overlay .reel-views{font-size:.65rem;color:rgba(255,255,255,.7);margin-top:4px;display:flex;align-items:center;gap:3px}
+    .reel-play{position:absolute;top:50%;left:50%;transform:translate(-50%,-50%);width:44px;height:44px;border-radius:50%;background:rgba(255,255,255,.2);backdrop-filter:blur(6px);display:grid;place-items:center;color:#fff;font-size:1.3rem;border:2px solid rgba(255,255,255,.3)}
+
+    /* ───────── Route Timeline ───────── */
+    .timeline{padding:0}
+    .tl-item{display:flex;gap:14px;position:relative;padding-bottom:28px}
+    .tl-item:last-child{padding-bottom:0}
+    .tl-item:last-child .tl-line{display:none}
+    .tl-dot-wrap{display:flex;flex-direction:column;align-items:center;flex-shrink:0;position:relative}
+    .tl-dot{width:14px;height:14px;border-radius:50%;border:3px solid var(--accent);background:var(--bg);z-index:1}
+    .tl-dot.start{background:var(--accent);box-shadow:0 0 10px var(--accent)}
+    .tl-dot.end{background:var(--accent2);border-color:var(--accent2);box-shadow:0 0 10px var(--accent2)}
+    .tl-line{position:absolute;top:14px;bottom:0;left:50%;width:2px;background:var(--border);transform:translateX(-50%)}
+    .tl-content{flex:1;background:var(--card);border:1px solid var(--border);border-radius:12px;padding:12px 14px}
+    .tl-content h4{font-size:.85rem;font-weight:700}
+    .tl-content p{font-size:.72rem;color:var(--text2);margin-top:3px;line-height:1.45}
+    .tl-content .tl-meta{display:flex;gap:8px;margin-top:8px;flex-wrap:wrap}
+    .tl-content .tl-meta span{font-size:.65rem;display:flex;align-items:center;gap:3px;color:var(--accent2)}
+    .tl-content .tl-meta span .material-icons-round{font-size:.85rem}
+
+    /* ───────── Map ───────── */
+    .map-wrapper{border-radius:var(--radius);overflow:hidden;border:1px solid var(--border);margin-bottom:16px}
+    .map-wrapper iframe{width:100%;height:350px;border:0}
+    .map-link{display:flex;align-items:center;justify-content:center;gap:6px;padding:12px;background:var(--card);border:1px solid var(--border);border-radius:12px;font-size:.82rem;font-weight:600;color:var(--accent2);margin-bottom:16px;transition:.2s}
+    .map-link:hover{background:var(--accent);color:#fff;border-color:var(--accent)}
+
+    /* ───────── Info Cards Grid ───────── */
+    .info-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .info-card{background:var(--card);border:1px solid var(--border);border-radius:14px;padding:16px;text-align:center}
+    .info-card .material-icons-round{font-size:1.8rem;margin-bottom:6px}
+    .info-card .ic-val{font-size:1.3rem;font-weight:800}
+    .info-card .ic-label{font-size:.68rem;color:var(--text2);margin-top:2px}
+    .info-card:nth-child(1) .material-icons-round{color:var(--accent)}
+    .info-card:nth-child(2) .material-icons-round{color:var(--accent2)}
+    .info-card:nth-child(3) .material-icons-round{color:var(--accent3)}
+    .info-card:nth-child(4) .material-icons-round{color:var(--accent4)}
+
+    /* ───────── Nearby Places ───────── */
+    .nearby-list{display:flex;flex-direction:column;gap:10px}
+    .nearby{display:flex;align-items:center;gap:12px;background:var(--card);border:1px solid var(--border);border-radius:14px;padding:12px 14px}
+    .nearby-icon{width:42px;height:42px;border-radius:12px;display:grid;place-items:center;font-size:1.2rem;flex-shrink:0}
+    .nearby-icon.eat{background:rgba(253,121,168,.15);color:var(--accent3)}
+    .nearby-icon.edu{background:rgba(108,92,231,.15);color:var(--accent)}
+    .nearby-icon.park{background:rgba(0,206,201,.15);color:var(--accent2)}
+    .nearby-icon.shop{background:rgba(253,203,110,.15);color:var(--accent4)}
+    .nearby-icon.health{background:rgba(116,185,255,.15);color:#74b9ff}
+    .nearby .nearby-info{flex:1}
+    .nearby .nearby-info h4{font-size:.82rem;font-weight:600}
+    .nearby .nearby-info p{font-size:.68rem;color:var(--text2)}
+    .nearby .nearby-dist{font-size:.7rem;font-weight:600;color:var(--accent2);white-space:nowrap}
+
+    /* ───────── Bottom Nav ───────── */
+    .bottom-nav{position:fixed;bottom:0;left:0;right:0;z-index:100;background:rgba(10,10,15,.92);backdrop-filter:blur(18px);-webkit-backdrop-filter:blur(18px);border-top:1px solid var(--border);display:flex;justify-content:space-around;padding:8px 0 env(safe-area-inset-bottom,8px);max-width:520px;margin:0 auto}
+    .bnav{display:flex;flex-direction:column;align-items:center;gap:2px;color:var(--text2);font-size:.6rem;font-weight:600;padding:4px 12px;border-radius:10px;transition:.2s;background:none}
+    .bnav .material-icons-round{font-size:1.35rem;transition:.2s}
+    .bnav.active{color:var(--accent)}
+    .bnav.active .material-icons-round{color:var(--accent)}
+
+    /* ───────── Bus Schedule Table ───────── */
+    .schedule-wrap{overflow-x:auto;border-radius:var(--radius);border:1px solid var(--border)}
+    .schedule-table{width:100%;border-collapse:collapse}
+    .schedule-table th{font-size:.7rem;text-align:left;padding:10px 12px;color:var(--accent);border-bottom:1px solid var(--border);font-weight:600;background:var(--card);white-space:nowrap}
+    .schedule-table td{font-size:.75rem;padding:10px 12px;border-bottom:1px solid rgba(42,42,64,.4);color:var(--text2);white-space:nowrap}
+    .schedule-table tr:hover td{background:rgba(108,92,231,.06)}
+    .schedule-table .bus-no{font-weight:700;color:var(--accent2)}
+
+    /* ───────── Scroll Reveal ───────── */
+    .reveal{opacity:0;transform:translateY(24px);transition:opacity .5s,transform .5s}
+    .reveal.visible{opacity:1;transform:translateY(0)}
+
+    /* ───────── Modal ───────── */
+    .modal-backdrop{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px)}
+    .modal-backdrop.open{display:flex}
+    .modal{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);max-width:420px;width:90%;max-height:80vh;overflow-y:auto;padding:24px;position:relative}
+    .modal h3{font-size:1.1rem;font-weight:800;margin-bottom:12px;background:var(--grad1);-webkit-background-clip:text;-webkit-text-fill-color:transparent}
+    .modal p{font-size:.82rem;line-height:1.6;color:var(--text2);margin-bottom:10px}
+    .modal-close{position:absolute;top:12px;right:12px;background:none;color:var(--text);font-size:1.3rem}
+
+    /* ───────── Full Reel (vertical) ───────── */
+    .full-reel{position:relative;width:100%;height:520px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
+    .full-reel img{width:100%;height:100%;object-fit:cover}
+
+    @media(min-width:560px){.container{padding:0}}
+  </style>
+</head>
+<body>
+  <!-- ═══ App Bar ═══ -->
+  <header class="app-bar">
+    <div class="logo">
+      <span class="icon material-icons-round">directions_bus</span>
+      <div>
+        <h1>DH Transit</h1>
+        <small>Dharwad ↔ Hubli • Your Commute Buddy</small>
+      </div>
+    </div>
+    <div class="app-bar-actions">
+      <button onclick="openModal('searchModal')" aria-label="Search"><span class="material-icons-round">search</span></button>
+      <button onclick="openModal('notifModal')" aria-label="Alerts"><span class="material-icons-round">notifications</span></button>
+    </div>
+  </header>
+
+  <main class="container">
+
+    <!-- ═══ Hero Banner ═══ -->
+    <section class="hero reveal">
+      <!-- Real aerial photo of Dharwad-Hubli corridor -->
+      <img class="hero-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Panoramic_View_of_Hubli_City_from_Nrupatunga_Hill.jpg/1280px-Panoramic_View_of_Hubli_City_from_Nrupatunga_Hill.jpg" alt="Panoramic view of Hubli-Dharwad from Nrupatunga Hill" loading="eager" />
+      <div class="hero-gradient">
+        <h2>🚌 Your Daily Route<br/><span class="highlight">Yeligar Sports → IIT Dharwad</span></h2>
+        <p>Krishna Hostel, Tapovan Nagar → IIT Dharwad permanent campus (Chikkamalligawad) & nearby essentials. Real-time info, IG-style feed & reels.</p>
+        <div class="hero-badges">
+          <span class="badge badge-live">● LIVE</span>
+          <div class="route-chip"><span class="material-icons-round">route</span> ~18 km</div>
+          <div class="route-chip"><span class="material-icons-round">schedule</span> 35-45 min</div>
+          <div class="route-chip"><span class="material-icons-round">currency_rupee</span> ₹15-30</div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ═══ Quick Stats ═══ -->
+    <div class="info-grid reveal">
+      <div class="info-card">
+        <span class="material-icons-round">directions_bus</span>
+        <div class="ic-val">8+</div>
+        <div class="ic-label">Bus Routes</div>
+      </div>
+      <div class="info-card">
+        <span class="material-icons-round">location_on</span>
+        <div class="ic-val">12</div>
+        <div class="ic-label">Key Stops</div>
+      </div>
+      <div class="info-card">
+        <span class="material-icons-round">access_time</span>
+        <div class="ic-val">6am</div>
+        <div class="ic-label">First Bus</div>
+      </div>
+      <div class="info-card">
+        <span class="material-icons-round">nightlight</span>
+        <div class="ic-val">10pm</div>
+        <div class="ic-label">Last Bus</div>
+      </div>
+    </div>
+
+    <!-- ═══ Tabs ═══ -->
+    <div class="tabs reveal" id="mainTabs">
+      <button class="tab active" data-section="feedSection">📸 Feed</button>
+      <button class="tab" data-section="reelsSection">🎬 Reels</button>
+      <button class="tab" data-section="routeSection">🗺️ Route</button>
+      <button class="tab" data-section="scheduleSection">🕐 Schedule</button>
+      <button class="tab" data-section="nearbySection">📍 Nearby</button>
+    </div>
+
+    <!-- ═══ IG Stories Row ═══ -->
+    <div class="section-title"><span class="material-icons-round">auto_awesome</span> Stories</div>
+    <div class="stories-row reveal">
+      <div class="story">
+        <div class="story-ring"><img src="https://maps.googleapis.com/maps/api/staticmap?center=15.4407,75.0093&zoom=16&size=100x100&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="Yeligar Sports" /></div>
+        <span>Yeligar Sports</span>
+      </div>
+      <div class="story">
+        <div class="story-ring"><img src="https://maps.googleapis.com/maps/api/staticmap?center=15.4392,75.0105&zoom=16&size=100x100&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="Krishna Hostel" /></div>
+        <span>Krishna Hostel</span>
+      </div>
+      <div class="story">
+        <div class="story-ring"><img src="https://maps.googleapis.com/maps/api/staticmap?center=15.4385,75.0085&zoom=16&size=100x100&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="Tapovan Nagar" /></div>
+        <span>Tapovan Ngr</span>
+      </div>
+      <div class="story">
+        <div class="story-ring"><img src="https://maps.googleapis.com/maps/api/staticmap?center=15.4549,75.0106&zoom=16&size=100x100&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="Court Circle" /></div>
+        <span>Court Circle</span>
+      </div>
+      <div class="story">
+        <div class="story-ring"><img src="https://maps.googleapis.com/maps/api/staticmap?center=15.4586,75.0090&zoom=16&size=100x100&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="Jubilee Circle" /></div>
+        <span>Jubilee Circle</span>
+      </div>
+      <div class="story">
+        <div class="story-ring"><img src="https://maps.googleapis.com/maps/api/staticmap?center=15.4874,74.9345&zoom=15&size=100x100&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="IIT Dharwad" /></div>
+        <span>IIT Dharwad</span>
+      </div>
+      <div class="story">
+        <div class="story-ring"><img src="https://maps.googleapis.com/maps/api/staticmap?center=15.3647,75.1240&zoom=16&size=100x100&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="Moorusavir Math" /></div>
+        <span>Moorusavir Math</span>
+      </div>
+      <div class="story">
+        <div class="story-ring"><img src="https://maps.googleapis.com/maps/api/staticmap?center=15.4420,74.9910&zoom=16&size=100x100&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="SDM Hospital" /></div>
+        <span>SDM Hospital</span>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ FEED SECTION ═══════════════════ -->
+    <div id="feedSection" class="tab-content">
+      <div class="section-title"><span class="material-icons-round">dynamic_feed</span> Transit Feed</div>
+      <div class="feed">
+
+        <!-- Card 1: Yeligar Sports Center -->
+        <article class="feed-card reveal">
+          <div class="feed-card-header">
+            <img class="feed-card-avatar" src="https://maps.googleapis.com/maps/api/staticmap?center=15.4407,75.0093&zoom=17&size=80x80&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="" />
+            <div class="info">
+              <div class="name">Yeligar Sports Center</div>
+              <div class="loc">📍 Krishna Hostel, Tapovan Nagar, Dharwad 580007</div>
+            </div>
+            <span class="badge badge-route">Start</span>
+          </div>
+          <img class="feed-card-img" src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=800&q=80" alt="Sports Arena — Cricket & Football ground" loading="lazy" />
+          <div class="feed-card-body">
+            <p class="caption">🏅 <strong>Yeligar Sports Arena</strong> — Tapovan Nagar's buzzing sports hub near Krishna Hostel. Box Cricket, Football Turf & Pickleball courts open 6 AM–midnight. Your transit journey starts right here at the Tapovan Nagar bus stop! 🚌</p>
+          </div>
+          <div class="feed-card-actions">
+            <button onclick="toggleLike(this)"><span class="material-icons-round">favorite_border</span><span class="count">234</span></button>
+            <button><span class="material-icons-round">chat_bubble_outline</span><span class="count">42</span></button>
+            <button><span class="material-icons-round">share</span></button>
+            <button><span class="material-icons-round">bookmark_border</span></button>
+          </div>
+          <div class="feed-card-tags">
+            <span>#YeligarSports</span><span>#KrishnaHostel</span><span>#TapovanNagar</span><span>#DharwadTransit</span>
+          </div>
+        </article>
+
+        <!-- Card 2: Tapovan Nagar -->
+        <article class="feed-card reveal">
+          <div class="feed-card-header">
+            <img class="feed-card-avatar" src="https://maps.googleapis.com/maps/api/staticmap?center=15.4385,75.0085&zoom=17&size=80x80&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="" />
+            <div class="info">
+              <div class="name">Tapovan Nagar</div>
+              <div class="loc">📍 Residential Area, Dharwad</div>
+            </div>
+          </div>
+          <img class="feed-card-img" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80" alt="Residential neighborhood" loading="lazy" />
+          <div class="feed-card-body">
+            <p class="caption">🏡 <strong>Tapovan Nagar</strong> — one of Dharwad's peaceful residential neighborhoods near Nehru Nagar. Great connectivity with NWKRTC buses running every 10-15 minutes towards Court Circle, Jubilee Circle & beyond. Student PGs and hostels nearby. 🚍</p>
+          </div>
+          <div class="feed-card-actions">
+            <button onclick="toggleLike(this)"><span class="material-icons-round">favorite_border</span><span class="count">189</span></button>
+            <button><span class="material-icons-round">chat_bubble_outline</span><span class="count">31</span></button>
+            <button><span class="material-icons-round">share</span></button>
+            <button><span class="material-icons-round">bookmark_border</span></button>
+          </div>
+          <div class="feed-card-tags">
+            <span>#TapovanNagar</span><span>#Dharwad</span><span>#CommunityLiving</span>
+          </div>
+        </article>
+
+        <!-- Card 3: IIT Dharwad -->
+        <article class="feed-card reveal">
+          <div class="feed-card-header">
+            <img class="feed-card-avatar" src="https://maps.googleapis.com/maps/api/staticmap?center=15.4874,74.9345&zoom=15&size=80x80&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="" />
+            <div class="info">
+              <div class="name">IIT Dharwad Campus</div>
+              <div class="loc">📍 Chikkamalligawad, Dharwad 580007</div>
+            </div>
+            <span class="badge badge-route">End</span>
+          </div>
+          <img class="feed-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Indian_Institute_of_Technology_Dharwad_02.jpg/1280px-Indian_Institute_of_Technology_Dharwad_02.jpg" alt="IIT Dharwad campus building" loading="lazy" />
+          <div class="feed-card-body">
+            <p class="caption">🎓 <strong>IIT Dharwad</strong> — Indian Institute of Technology, permanent campus at Chikkamalligawad on a 470-acre estate. Buses from Dharwad city center drop you near the gate. A premier tech &amp; research powerhouse of North Karnataka! 💻</p>
+          </div>
+          <div class="feed-card-actions">
+            <button onclick="toggleLike(this)"><span class="material-icons-round">favorite_border</span><span class="count">512</span></button>
+            <button><span class="material-icons-round">chat_bubble_outline</span><span class="count">87</span></button>
+            <button><span class="material-icons-round">share</span></button>
+            <button><span class="material-icons-round">bookmark_border</span></button>
+          </div>
+          <div class="feed-card-tags">
+            <span>#IITDharwad</span><span>#TechCampus</span><span>#NorthKarnataka</span><span>#StudentLife</span>
+          </div>
+        </article>
+
+        <!-- Card 4: Karnatak University -->
+        <article class="feed-card reveal">
+          <div class="feed-card-header">
+            <img class="feed-card-avatar" src="https://maps.googleapis.com/maps/api/staticmap?center=15.4480,74.9980&zoom=16&size=80x80&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="" />
+            <div class="info">
+              <div class="name">Karnatak University</div>
+              <div class="loc">📍 Pavate Nagar, Dharwad</div>
+            </div>
+          </div>
+          <img class="feed-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Karnataka-University-Dharwad.jpg/1280px-Karnataka-University-Dharwad.jpg" alt="Karnataka University campus Dharwad" loading="lazy" />
+          <div class="feed-card-body">
+            <p class="caption">🏛️ <strong>Karnatak University</strong> — Dharwad's historic academic center, established 1949. Beautiful campus on the transit corridor. Well connected by NWKRTC buses from Tapovan Nagar &amp; Court Circle. 📚</p>
+          </div>
+          <div class="feed-card-actions">
+            <button onclick="toggleLike(this)"><span class="material-icons-round">favorite_border</span><span class="count">345</span></button>
+            <button><span class="material-icons-round">chat_bubble_outline</span><span class="count">58</span></button>
+            <button><span class="material-icons-round">share</span></button>
+            <button><span class="material-icons-round">bookmark_border</span></button>
+          </div>
+          <div class="feed-card-tags">
+            <span>#KarnatakUniversity</span><span>#Dharwad</span><span>#Heritage</span>
+          </div>
+        </article>
+
+        <!-- Card 5: SDM Hospital -->
+        <article class="feed-card reveal">
+          <div class="feed-card-header">
+            <img class="feed-card-avatar" src="https://maps.googleapis.com/maps/api/staticmap?center=15.4420,74.9910&zoom=16&size=80x80&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="" />
+            <div class="info">
+              <div class="name">SDM Medical College & Hospital</div>
+              <div class="loc">📍 Sattur, Dharwad</div>
+            </div>
+          </div>
+          <img class="feed-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Main_building_at_SDM_College_of_Medical_Sciences_in_Dharwad.jpg/1280px-Main_building_at_SDM_College_of_Medical_Sciences_in_Dharwad.jpg" alt="SDM Medical College Dharwad" loading="lazy" />
+          <div class="feed-card-body">
+            <p class="caption">🏥 <strong>SDM Medical College & Hospital</strong> — Sattur, Dharwad. A key medical landmark on the transit route. Major bus connections to both Dharwad city and Hubli. Emergency & outpatient services accessible by bus. 🩺</p>
+          </div>
+          <div class="feed-card-actions">
+            <button onclick="toggleLike(this)"><span class="material-icons-round">favorite_border</span><span class="count">278</span></button>
+            <button><span class="material-icons-round">chat_bubble_outline</span><span class="count">39</span></button>
+            <button><span class="material-icons-round">share</span></button>
+            <button><span class="material-icons-round">bookmark_border</span></button>
+          </div>
+          <div class="feed-card-tags">
+            <span>#SDMHospital</span><span>#Dharwad</span><span>#Healthcare</span>
+          </div>
+        </article>
+
+        <!-- Card 6: Nrupatunga Betta -->
+        <article class="feed-card reveal">
+          <div class="feed-card-header">
+            <img class="feed-card-avatar" src="https://maps.googleapis.com/maps/api/staticmap?center=15.3750,75.0870&zoom=15&size=80x80&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="" />
+            <div class="info">
+              <div class="name">Nrupatunga Betta</div>
+              <div class="loc">📍 Unkal Hill, Hubli-Dharwad</div>
+            </div>
+          </div>
+          <img class="feed-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/City_of_Hubli_at_night.jpg/1280px-City_of_Hubli_at_night.jpg" alt="Hubli city night view from Nrupatunga Hill" loading="lazy" />
+          <div class="feed-card-body">
+            <p class="caption">🌄 <strong>Nrupatunga Betta</strong> — the premier hilltop viewpoint between Hubli & Dharwad. Paved walking tracks, gardens &amp; breathtaking sunsets overlooking the twin city. A must-visit just off the transit corridor! 🌇</p>
+          </div>
+          <div class="feed-card-actions">
+            <button onclick="toggleLike(this)"><span class="material-icons-round">favorite_border</span><span class="count">891</span></button>
+            <button><span class="material-icons-round">chat_bubble_outline</span><span class="count">134</span></button>
+            <button><span class="material-icons-round">share</span></button>
+            <button><span class="material-icons-round">bookmark_border</span></button>
+          </div>
+          <div class="feed-card-tags">
+            <span>#NrupatungaBetta</span><span>#HubliDharwad</span><span>#Sunset</span><span>#NorthKarnataka</span>
+          </div>
+        </article>
+
+        <!-- Card 7: Commuter Tips -->
+        <article class="feed-card reveal">
+          <div class="feed-card-header">
+            <img class="feed-card-avatar" src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=80&q=80" alt="" style="border-radius:50%;object-fit:cover" />
+            <div class="info">
+              <div class="name">NWKRTC Transit Tips</div>
+              <div class="loc">📍 Dharwad-Hubli Twin City</div>
+            </div>
+            <span class="badge badge-live">● LIVE</span>
+          </div>
+          <img class="feed-card-img" src="https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=800&q=80" alt="Bus transit" loading="lazy" />
+          <div class="feed-card-body">
+            <p class="caption">💡 <strong>Pro Tips for Commuters:</strong><br/>✅ NWKRTC buses run every 10-15 min on the DWD-HBL route<br/>✅ Carry exact change (₹15-30)<br/>✅ Auto fares: ₹10 starting + ₹15/km<br/>✅ Peak hours: 8-10 AM & 5-7 PM<br/>✅ Monthly pass saves ~40% 💰<br/>✅ BRTS Chigari buses available on main corridor</p>
+          </div>
+          <div class="feed-card-actions">
+            <button onclick="toggleLike(this)"><span class="material-icons-round">favorite_border</span><span class="count">678</span></button>
+            <button><span class="material-icons-round">chat_bubble_outline</span><span class="count">123</span></button>
+            <button><span class="material-icons-round">share</span></button>
+            <button><span class="material-icons-round">bookmark_border</span></button>
+          </div>
+          <div class="feed-card-tags">
+            <span>#NWKRTC</span><span>#TransitTips</span><span>#DharwadHubli</span><span>#CommuterLife</span>
+          </div>
+        </article>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ REELS SECTION ═══════════════════ -->
+    <div id="reelsSection" class="tab-content" style="display:none">
+      <div class="section-title"><span class="material-icons-round">movie</span> Transit Reels</div>
+      <div class="reels-row reveal">
+        <div class="reel">
+          <img class="reel-bg" src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&q=80" alt="" loading="lazy" />
+          <div class="reel-overlay">
+            <div class="reel-title">Morning Commute: Tapovan → IIT Dharwad</div>
+            <div class="reel-views"><span class="material-icons-round" style="font-size:.8rem">visibility</span> 12.4K views</div>
+          </div>
+          <div class="reel-play"><span class="material-icons-round">play_arrow</span></div>
+        </div>
+        <div class="reel">
+          <img class="reel-bg" src="https://images.unsplash.com/photo-1574629810360-7efbbe195018?w=400&q=80" alt="" loading="lazy" />
+          <div class="reel-overlay">
+            <div class="reel-title">Yeligar Sports Arena Tour 🏟️</div>
+            <div class="reel-views"><span class="material-icons-round" style="font-size:.8rem">visibility</span> 8.7K views</div>
+          </div>
+          <div class="reel-play"><span class="material-icons-round">play_arrow</span></div>
+        </div>
+        <div class="reel">
+          <img class="reel-bg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/City_of_Hubli_at_night.jpg/800px-City_of_Hubli_at_night.jpg" alt="" loading="lazy" />
+          <div class="reel-overlay">
+            <div class="reel-title">Nrupatunga Betta Night View 🌃</div>
+            <div class="reel-views"><span class="material-icons-round" style="font-size:.8rem">visibility</span> 15.2K views</div>
+          </div>
+          <div class="reel-play"><span class="material-icons-round">play_arrow</span></div>
+        </div>
+        <div class="reel">
+          <img class="reel-bg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Indian_Institute_of_Technology_Dharwad_02.jpg/800px-Indian_Institute_of_Technology_Dharwad_02.jpg" alt="" loading="lazy" />
+          <div class="reel-overlay">
+            <div class="reel-title">IIT Dharwad Campus Life 🎓</div>
+            <div class="reel-views"><span class="material-icons-round" style="font-size:.8rem">visibility</span> 22.1K views</div>
+          </div>
+          <div class="reel-play"><span class="material-icons-round">play_arrow</span></div>
+        </div>
+        <div class="reel">
+          <img class="reel-bg" src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&q=80" alt="" loading="lazy" />
+          <div class="reel-overlay">
+            <div class="reel-title">Dharwad Pedha & Food Trail 🍛</div>
+            <div class="reel-views"><span class="material-icons-round" style="font-size:.8rem">visibility</span> 31.5K views</div>
+          </div>
+          <div class="reel-play"><span class="material-icons-round">play_arrow</span></div>
+        </div>
+        <div class="reel">
+          <img class="reel-bg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Karnataka-University-Dharwad.jpg/800px-Karnataka-University-Dharwad.jpg" alt="" loading="lazy" />
+          <div class="reel-overlay">
+            <div class="reel-title">Karnatak University Heritage Walk 🏛️</div>
+            <div class="reel-views"><span class="material-icons-round" style="font-size:.8rem">visibility</span> 9.3K views</div>
+          </div>
+          <div class="reel-play"><span class="material-icons-round">play_arrow</span></div>
+        </div>
+      </div>
+
+      <!-- Full Reels (vertical scroll) -->
+      <div class="section-title"><span class="material-icons-round">swipe_up</span> Full Reels</div>
+      <div class="feed">
+        <div class="full-reel">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Panoramic_View_of_Hubli_City_from_Nrupatunga_Hill.jpg/1280px-Panoramic_View_of_Hubli_City_from_Nrupatunga_Hill.jpg" alt="Hubli-Dharwad Panorama" loading="lazy" />
+          <div class="reel-overlay" style="padding:24px">
+            <span class="badge badge-live" style="width:fit-content;margin-bottom:8px">● TRENDING</span>
+            <div class="reel-title" style="font-size:1.1rem">Complete Route Guide: Yeligar Sports Center → IIT Dharwad</div>
+            <p style="font-size:.78rem;color:rgba(255,255,255,.7);margin-top:6px;line-height:1.5">Every stop, every turn, every shortcut. The ultimate commuter's guide from Tapovan Nagar to IIT Dharwad permanent campus at Chikkamalligawad.</p>
+            <div class="reel-views" style="margin-top:10px"><span class="material-icons-round" style="font-size:.8rem">visibility</span> 45.8K views • <span class="material-icons-round" style="font-size:.8rem">favorite</span> 2.3K likes</div>
+          </div>
+          <div class="reel-play" style="width:60px;height:60px;font-size:1.6rem"><span class="material-icons-round">play_arrow</span></div>
+        </div>
+
+        <div class="full-reel">
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Indian_Institute_of_Technology_Dharwad_02.jpg/1280px-Indian_Institute_of_Technology_Dharwad_02.jpg" alt="IIT Dharwad" loading="lazy" />
+          <div class="reel-overlay" style="padding:24px">
+            <div class="reel-title" style="font-size:1.1rem">IIT Dharwad — 470 Acre Campus Tour 🎓</div>
+            <p style="font-size:.78rem;color:rgba(255,255,255,.7);margin-top:6px;line-height:1.5">Inside the permanent campus: academic blocks, labs, hostels, sports facilities, and the stunning Karnataka landscape. A day in the life at IIT Dharwad!</p>
+            <div class="reel-views" style="margin-top:10px"><span class="material-icons-round" style="font-size:.8rem">visibility</span> 67.2K views • <span class="material-icons-round" style="font-size:.8rem">favorite</span> 5.1K likes</div>
+          </div>
+          <div class="reel-play" style="width:60px;height:60px;font-size:1.6rem"><span class="material-icons-round">play_arrow</span></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ ROUTE SECTION ═══════════════════ -->
+    <div id="routeSection" class="tab-content" style="display:none">
+      <div class="section-title"><span class="material-icons-round">map</span> Live Google Maps Route</div>
+
+      <!-- Embedded Google Maps with Directions -->
+      <div class="map-wrapper reveal">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d61500!2d74.95!3d15.46!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x3bbf34b14c0569c5%3A0xda7354e4345ef40a!2sYeligar%20Sports%20Arena%2C%20Tapovan%20Nagar%2C%20Dharwad%2C%20Karnataka%20580007!3m2!1d15.4407!2d75.0093!4m5!1s0x3bbf30e42b1a6e5f%3A0x2a11b tried0ed3b48!2sIIT%20Dharwad%2C%20Karnataka!3m2!1d15.4874!2d74.9345!5e0!3m2!1sen!2sin!4v1699000000000!5m2!1sen!2sin"
+          allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+
+      <a class="map-link reveal" href="https://www.google.com/maps/dir/Yeligar+Sports+Arena,+Tapovan+Nagar,+Dharwad,+Karnataka+580007/IIT+Dharwad,+Chikkamalligawad,+Karnataka" target="_blank" rel="noopener">
+        <span class="material-icons-round">open_in_new</span> Open Full Route in Google Maps
+      </a>
+
+      <div class="section-title"><span class="material-icons-round">timeline</span> Stop-by-Stop Route</div>
+      <div class="timeline reveal">
+
+        <div class="tl-item">
+          <div class="tl-dot-wrap"><div class="tl-dot start"></div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <h4>🏟️ Yeligar Sports Center (Krishna Hostel)</h4>
+            <p>Starting point — Tapovan Nagar Rd, Nehru Nagar, Dharwad 580007. NWKRTC bus stop & auto stand. Box Cricket / Football / Pickleball.</p>
+            <div class="tl-meta"><span><span class="material-icons-round">schedule</span> 0 min</span><span><span class="material-icons-round">place</span> Tapovan Nagar</span></div>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <h4>🚏 Sadankeri Bus Stop</h4>
+            <p>Major junction. Connections to Hubli, University area & Vidyanagar.</p>
+            <div class="tl-meta"><span><span class="material-icons-round">schedule</span> 5 min</span><span><span class="material-icons-round">straighten</span> 2 km</span></div>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <h4>⚖️ Court Circle</h4>
+            <p>Central Dharwad hub. Major bus interchange — routes to all parts of twin city.</p>
+            <div class="tl-meta"><span><span class="material-icons-round">schedule</span> 10 min</span><span><span class="material-icons-round">straighten</span> 4 km</span></div>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <h4>🏛️ Jubilee Circle</h4>
+            <p>Heart of Dharwad. Famous Pedha shops, banks & BRTS Chigari stop.</p>
+            <div class="tl-meta"><span><span class="material-icons-round">schedule</span> 13 min</span><span><span class="material-icons-round">straighten</span> 5 km</span></div>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <h4>🏫 Karnatak University Area</h4>
+            <p>Pavate Nagar. Historic campus, library & botanical garden nearby.</p>
+            <div class="tl-meta"><span><span class="material-icons-round">schedule</span> 17 min</span><span><span class="material-icons-round">straighten</span> 7 km</span></div>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <h4>🏥 SDM Hospital / Sattur</h4>
+            <p>Key medical facility on the route. Well connected to both cities.</p>
+            <div class="tl-meta"><span><span class="material-icons-round">schedule</span> 22 min</span><span><span class="material-icons-round">straighten</span> 10 km</span></div>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot-wrap"><div class="tl-dot"></div><div class="tl-line"></div></div>
+          <div class="tl-content">
+            <h4>🛣️ PB Road / Kelageri Junction</h4>
+            <p>Pune-Bengaluru highway junction. Turn towards Chikkamalligawad for IIT campus.</p>
+            <div class="tl-meta"><span><span class="material-icons-round">schedule</span> 28 min</span><span><span class="material-icons-round">straighten</span> 14 km</span></div>
+          </div>
+        </div>
+
+        <div class="tl-item">
+          <div class="tl-dot-wrap"><div class="tl-dot end"></div></div>
+          <div class="tl-content">
+            <h4>🎓 IIT Dharwad — Permanent Campus</h4>
+            <p>Destination! Indian Institute of Technology, Dharwad. 470-acre campus at Chikkamalligawad near Kelageri, PB Road.</p>
+            <div class="tl-meta"><span><span class="material-icons-round">schedule</span> 35 min</span><span><span class="material-icons-round">straighten</span> ~18 km</span></div>
+          </div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- ═══════════════════ SCHEDULE SECTION ═══════════════════ -->
+    <div id="scheduleSection" class="tab-content" style="display:none">
+      <div class="section-title"><span class="material-icons-round">schedule</span> Bus Schedule (Dharwad ↔ IIT Dharwad)</div>
+      <div class="schedule-wrap reveal">
+        <table class="schedule-table">
+          <thead>
+            <tr><th>Bus #</th><th>Route</th><th>Departs</th><th>Freq</th><th>Fare</th></tr>
+          </thead>
+          <tbody>
+            <tr><td class="bus-no">NWKRTC 1</td><td>Dharwad CBS → Hubli CBS</td><td>6:00 AM</td><td>Every 10 min</td><td>₹15</td></tr>
+            <tr><td class="bus-no">NWKRTC 3</td><td>Tapovan → Court Cir → PB Rd</td><td>6:15 AM</td><td>Every 15 min</td><td>₹20</td></tr>
+            <tr><td class="bus-no">NWKRTC 5A</td><td>Sadankeri → Kelageri → IIT Rd</td><td>7:00 AM</td><td>Every 20 min</td><td>₹22</td></tr>
+            <tr><td class="bus-no">NWKRTC 8</td><td>Dharwad → Sattur → PB Rd</td><td>6:30 AM</td><td>Every 12 min</td><td>₹22</td></tr>
+            <tr><td class="bus-no">Chigari</td><td>BRTS Jubilee → Unkal → Hubli</td><td>6:00 AM</td><td>Every 8 min</td><td>₹15</td></tr>
+            <tr><td class="bus-no">City 14</td><td>Tapovan → SDM → PB Rd</td><td>6:45 AM</td><td>Every 20 min</td><td>₹18</td></tr>
+            <tr><td class="bus-no">Express</td><td>Dharwad → Hubli (Non-stop)</td><td>7:00 AM</td><td>Every 30 min</td><td>₹25</td></tr>
+            <tr><td class="bus-no">IIT Shuttle</td><td>Krishna Hostel → IIT Campus</td><td>8:00 AM</td><td>Morning/Eve</td><td>₹10</td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div style="padding:16px 0;font-size:.72rem;color:var(--text2);line-height:1.6">
+        <p>⚠️ <strong>Note:</strong> Timings are approximate per NWKRTC schedules. Frequencies may vary on Sundays & holidays. Arrive 5 min early. Monthly passes available at Dharwad CBS counter. BRTS Chigari buses run on the dedicated Dharwad-Hubli corridor.</p>
+      </div>
+
+      <!-- Embedded map showing bus route -->
+      <div class="section-title"><span class="material-icons-round">directions_bus</span> Transit Corridor Map</div>
+      <div class="map-wrapper reveal">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d61500!2d74.95!3d15.44!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bbf34816f7a0e69%3A0xfb8e06a3e0cf9de4!2sDharwad%2C%20Karnataka!5e0!3m2!1sen!2sin!4v1699000000000!5m2!1sen!2sin"
+          allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+
+    <!-- ═══════════════════ NEARBY SECTION ═══════════════════ -->
+    <div id="nearbySection" class="tab-content" style="display:none">
+      <div class="section-title"><span class="material-icons-round">explore</span> Nearby Places</div>
+      <div class="nearby-list reveal">
+        <div class="nearby">
+          <div class="nearby-icon eat"><span class="material-icons-round">restaurant</span></div>
+          <div class="nearby-info"><h4>Dharwad Pedha Shop (Mishra/Thakur)</h4><p>World-famous sweets • Near Jubilee Circle</p></div>
+          <div class="nearby-dist">1.2 km</div>
+        </div>
+        <div class="nearby">
+          <div class="nearby-icon edu"><span class="material-icons-round">school</span></div>
+          <div class="nearby-info"><h4>Karnatak University</h4><p>Pavate Nagar, Dharwad • Est. 1949</p></div>
+          <div class="nearby-dist">3.5 km</div>
+        </div>
+        <div class="nearby">
+          <div class="nearby-icon park"><span class="material-icons-round">park</span></div>
+          <div class="nearby-info"><h4>Nrupatunga Betta</h4><p>Hilltop park • Panoramic sunset views</p></div>
+          <div class="nearby-dist">6 km</div>
+        </div>
+        <div class="nearby">
+          <div class="nearby-icon health"><span class="material-icons-round">local_hospital</span></div>
+          <div class="nearby-info"><h4>SDM Medical College & Hospital</h4><p>Sattur, Dharwad • Multi-specialty</p></div>
+          <div class="nearby-dist">5.8 km</div>
+        </div>
+        <div class="nearby">
+          <div class="nearby-icon eat"><span class="material-icons-round">local_cafe</span></div>
+          <div class="nearby-info"><h4>Kamat Restaurant</h4><p>Thatte Idli & South Indian • Court Circle</p></div>
+          <div class="nearby-dist">2.1 km</div>
+        </div>
+        <div class="nearby">
+          <div class="nearby-icon shop"><span class="material-icons-round">shopping_bag</span></div>
+          <div class="nearby-info"><h4>CBT Market</h4><p>Shopping & daily essentials • Central Dharwad</p></div>
+          <div class="nearby-dist">2.8 km</div>
+        </div>
+        <div class="nearby">
+          <div class="nearby-icon edu"><span class="material-icons-round">computer</span></div>
+          <div class="nearby-info"><h4>IIT Dharwad</h4><p>Permanent Campus • Chikkamalligawad, PB Road</p></div>
+          <div class="nearby-dist">18 km</div>
+        </div>
+        <div class="nearby">
+          <div class="nearby-icon park"><span class="material-icons-round">temple_hindu</span></div>
+          <div class="nearby-info"><h4>Chandramouleshwara Temple</h4><p>Ancient Chalukyan temple • Hubli Rd</p></div>
+          <div class="nearby-dist">3.0 km</div>
+        </div>
+        <div class="nearby">
+          <div class="nearby-icon eat"><span class="material-icons-round">local_dining</span></div>
+          <div class="nearby-info"><h4>Hotel Naveen</h4><p>North Karnataka cuisine • PB Road</p></div>
+          <div class="nearby-dist">4.5 km</div>
+        </div>
+        <div class="nearby">
+          <div class="nearby-icon health"><span class="material-icons-round">local_pharmacy</span></div>
+          <div class="nearby-info"><h4>KIMS Hospital</h4><p>Multi-specialty • Hubli</p></div>
+          <div class="nearby-dist">20 km</div>
+        </div>
+      </div>
+
+      <!-- Nearby map -->
+      <div class="section-title" style="margin-top:20px"><span class="material-icons-round">place</span> Explore on Map</div>
+      <div class="map-wrapper reveal">
+        <iframe
+          src="https://www.google.com/maps/embed?pb=!1m18!1m12!1m3!1d30750!2d74.9950!3d15.4450!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!3m3!1m2!1s0x3bbf34816f7a0e69%3A0xfb8e06a3e0cf9de4!2sDharwad%2C%20Karnataka!5e0!3m2!1sen!2sin!4v1699000000000!5m2!1sen!2sin"
+          allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
+        </iframe>
+      </div>
+    </div>
+
+  </main>
+
+  <!-- ═══ Bottom Navigation ═══ -->
+  <nav class="bottom-nav">
+    <button class="bnav active" data-section="feedSection"><span class="material-icons-round">home</span>Feed</button>
+    <button class="bnav" data-section="reelsSection"><span class="material-icons-round">movie</span>Reels</button>
+    <button class="bnav" data-section="routeSection"><span class="material-icons-round">map</span>Route</button>
+    <button class="bnav" data-section="scheduleSection"><span class="material-icons-round">schedule</span>Schedule</button>
+    <button class="bnav" data-section="nearbySection"><span class="material-icons-round">explore</span>Nearby</button>
+  </nav>
+
+  <!-- ═══ Search Modal ═══ -->
+  <div class="modal-backdrop" id="searchModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('searchModal')"><span class="material-icons-round">close</span></button>
+      <h3>🔍 Search Transit</h3>
+      <input type="text" placeholder="Search stops, routes, places..." style="width:100%;padding:12px 16px;border-radius:12px;border:1px solid var(--border);background:var(--surface);color:var(--text);font-size:.85rem;outline:none;font-family:var(--font)" />
+      <p style="margin-top:14px">Popular searches:</p>
+      <div style="display:flex;gap:6px;flex-wrap:wrap;margin-top:8px">
+        <span class="route-chip" style="cursor:pointer">🏟️ Yeligar Sports</span>
+        <span class="route-chip" style="cursor:pointer">🎓 IIT Dharwad</span>
+        <span class="route-chip" style="cursor:pointer">🚌 Bus Timings</span>
+        <span class="route-chip" style="cursor:pointer">🏛️ Karnatak University</span>
+        <span class="route-chip" style="cursor:pointer">🍛 Dharwad Pedha</span>
+      </div>
+    </div>
+  </div>
+
+  <!-- ═══ Notification Modal ═══ -->
+  <div class="modal-backdrop" id="notifModal">
+    <div class="modal">
+      <button class="modal-close" onclick="closeModal('notifModal')"><span class="material-icons-round">close</span></button>
+      <h3>🔔 Transit Alerts</h3>
+      <div style="display:flex;flex-direction:column;gap:12px">
+        <div style="display:flex;gap:10px;align-items:start">
+          <span class="material-icons-round" style="color:var(--accent3);font-size:1.2rem;margin-top:2px">warning</span>
+          <div><strong style="font-size:.82rem">Route Diversion</strong><p>Court Circle road work — buses via Sadankeri bypass till Nov 10. <span style="color:var(--text2);font-size:.7rem">2 hrs ago</span></p></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:start">
+          <span class="material-icons-round" style="color:var(--accent2);font-size:1.2rem;margin-top:2px">info</span>
+          <div><strong style="font-size:.82rem">IIT Dharwad Shuttle Added</strong><p>Direct Krishna Hostel → IIT Dharwad campus shuttle at 8 AM & 5 PM daily! <span style="color:var(--text2);font-size:.7rem">1 day ago</span></p></div>
+        </div>
+        <div style="display:flex;gap:10px;align-items:start">
+          <span class="material-icons-round" style="color:var(--accent4);font-size:1.2rem;margin-top:2px">celebration</span>
+          <div><strong style="font-size:.82rem">Festival Schedule</strong><p>Extra buses on Hubli-Dharwad route for Dussehra week. <span style="color:var(--text2);font-size:.7rem">3 days ago</span></p></div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <script>
+    // ── Tab Switching ──
+    function switchTab(sectionId) {
+      document.querySelectorAll('.tab-content').forEach(s => s.style.display = 'none');
+      document.querySelectorAll('.tab').forEach(t => t.classList.remove('active'));
+      document.querySelectorAll('.bnav').forEach(b => b.classList.remove('active'));
+      const sec = document.getElementById(sectionId);
+      if (sec) sec.style.display = 'block';
+      document.querySelectorAll(`.tab[data-section="${sectionId}"]`).forEach(t => t.classList.add('active'));
+      document.querySelectorAll(`.bnav[data-section="${sectionId}"]`).forEach(b => b.classList.add('active'));
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+    document.querySelectorAll('.tab, .bnav').forEach(btn => {
+      btn.addEventListener('click', () => switchTab(btn.dataset.section));
+    });
+
+    // ── Like Toggle ──
+    function toggleLike(btn) {
+      btn.classList.toggle('liked');
+      const icon = btn.querySelector('.material-icons-round');
+      const count = btn.querySelector('.count');
+      if (btn.classList.contains('liked')) {
+        icon.textContent = 'favorite';
+        count.textContent = parseInt(count.textContent) + 1;
+      } else {
+        icon.textContent = 'favorite_border';
+        count.textContent = parseInt(count.textContent) - 1;
+      }
+    }
+
+    // ── Modals ──
+    function openModal(id) { document.getElementById(id).classList.add('open'); }
+    function closeModal(id) { document.getElementById(id).classList.remove('open'); }
+    document.querySelectorAll('.modal-backdrop').forEach(m => {
+      m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
+    });
+
+    // ── Scroll Reveal ──
+    const observer = new IntersectionObserver((entries) => {
+      entries.forEach(e => { if (e.isIntersecting) { e.target.classList.add('visible'); observer.unobserve(e.target); } });
+    }, { threshold: 0.1 });
+    document.querySelectorAll('.reveal').forEach(el => observer.observe(el));
+  </script>
+</body>
+</html>
