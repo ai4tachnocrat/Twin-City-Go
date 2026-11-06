@@ -12,15 +12,15 @@
     /* ───────── Reset & Variables ───────── */
     *,*::before,*::after{box-sizing:border-box;margin:0;padding:0}
     :root{
-      --bg:#0a0a0f;--surface:#14141f;--card:#1c1c2e;--border:#2a2a40;
-      --accent:#6c5ce7;--accent2:#00cec9;--accent3:#fd79a8;--accent4:#fdcb6e;
-      --text:#e8e8f0;--text2:#a0a0b8;--grad1:linear-gradient(135deg,#6c5ce7,#00cec9);
-      --grad2:linear-gradient(135deg,#fd79a8,#fdcb6e);
+      --bg:#0b0a12;--surface:#13111c;--card:rgba(255,255,255,.04);--border:rgba(255,255,255,.09);
+      --accent:#a78bfa;--accent2:#5eead4;--accent3:#f472b6;--accent4:#fbbf24;
+      --text:#f4f2fa;--text2:#a6a3b8;--grad1:linear-gradient(120deg,#a78bfa,#f472b6 55%,#fbbf24);
+      --grad2:conic-gradient(from 210deg,#feda75,#fa7e1e,#d62976,#962fbf,#4f5bd5,#feda75);
       --radius:16px;--shadow:0 8px 32px rgba(0,0,0,.45);
       --font:'Inter',system-ui,sans-serif;
     }
     html{scroll-behavior:smooth;font-size:16px}
-    body{font-family:var(--font);background:var(--bg);color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
+    body{font-family:var(--font);background:radial-gradient(900px 500px at 10% -10%,rgba(167,139,250,.18),transparent 60%),radial-gradient(700px 500px at 110% 20%,rgba(244,114,182,.12),transparent 60%),var(--bg);background-attachment:fixed;color:var(--text);overflow-x:hidden;-webkit-font-smoothing:antialiased}
     a{color:inherit;text-decoration:none}
     img{display:block;max-width:100%}
     button{cursor:pointer;border:none;font-family:var(--font)}
@@ -59,19 +59,19 @@
     .tabs{display:flex;gap:4px;margin-top:8px;overflow-x:auto;-webkit-overflow-scrolling:touch;scrollbar-width:none}
     .tabs::-webkit-scrollbar{display:none}
     .tab{padding:10px 18px;border-radius:12px;font-size:.78rem;font-weight:600;white-space:nowrap;background:var(--card);border:1px solid var(--border);color:var(--text2);transition:.25s}
-    .tab.active{background:var(--accent);border-color:var(--accent);color:#fff}
+    .tab.active{background:var(--grad1);border-color:transparent;color:#140f1f}
 
     /* ───────── Stories / IG-Style Circles ───────── */
     .stories-row{display:flex;gap:14px;padding:8px 0 0;overflow-x:auto;scrollbar-width:none}
     .stories-row::-webkit-scrollbar{display:none}
-    .story{display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0}
+    .story{transition:transform .2s;display:flex;flex-direction:column;align-items:center;gap:5px;flex-shrink:0}
     .story-ring{width:68px;height:68px;border-radius:50%;padding:3px;background:var(--grad2)}
     .story-ring img{width:100%;height:100%;border-radius:50%;object-fit:cover;border:3px solid var(--bg)}
     .story span{font-size:.65rem;color:var(--text2);max-width:68px;text-align:center;overflow:hidden;text-overflow:ellipsis;white-space:nowrap}
 
     /* ───────── Feed Cards ───────── */
     .feed{display:flex;flex-direction:column;gap:16px;padding-bottom:100px}
-    .feed-card{background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:transform .2s}
+    .feed-card{backdrop-filter:blur(10px);box-shadow:var(--shadow);background:var(--card);border:1px solid var(--border);border-radius:var(--radius);overflow:hidden;transition:transform .2s}
     .feed-card:hover{transform:translateY(-2px)}
     .feed-card-header{display:flex;align-items:center;padding:12px 14px;gap:10px}
     .feed-card-avatar{width:36px;height:36px;border-radius:50%;object-fit:cover;flex-shrink:0}
@@ -179,7 +179,35 @@
     .full-reel{position:relative;width:100%;height:520px;border-radius:var(--radius);overflow:hidden;border:1px solid var(--border)}
     .full-reel img{width:100%;height:100%;object-fit:cover}
 
-    @media(min-width:560px){.container{padding:0}}
+
+    /* ───────── Photo grid (IG profile style) ───────── */
+    .ig-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:4px;border-radius:var(--radius);overflow:hidden}
+    .ig-tile{position:relative;aspect-ratio:1;overflow:hidden;background:var(--surface)}
+    .ig-tile img{width:100%;height:100%;object-fit:cover;transition:transform .5s,filter .3s;filter:saturate(1.1) contrast(1.05)}
+    .ig-tile::after{content:'';position:absolute;inset:0;background:linear-gradient(transparent 45%,rgba(11,10,18,.85))}
+    .ig-tile .ig-cap{position:absolute;left:8px;right:8px;bottom:7px;z-index:1;font-size:.66rem;font-weight:700;display:flex;align-items:center;gap:3px;line-height:1.2}
+    .ig-tile .ig-cap .material-icons-round{font-size:.85rem;color:var(--accent3)}
+    .ig-tile:hover img{transform:scale(1.08)}
+    .story:hover{transform:translateY(-3px)}
+    .maps-link{color:var(--accent2);display:inline-flex;align-items:center;gap:2px}
+    .maps-link:hover{text-decoration:underline}
+    .credit{font-size:.62rem;color:var(--text2);margin-top:8px}
+
+    /* ───────── Visitor counter ───────── */
+    .visits{display:flex;align-items:center;gap:12px;margin:16px 0;padding:14px 16px;border-radius:var(--radius);border:1px solid var(--border);background:linear-gradient(120deg,rgba(167,139,250,.14),rgba(244,114,182,.10))}
+    .visits .material-icons-round{font-size:1.6rem;color:var(--accent3)}
+    .visits .v-num{font-size:1.5rem;font-weight:900;font-variant-numeric:tabular-nums;background:var(--grad1);-webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;line-height:1}
+    .visits .v-label{font-size:.7rem;color:var(--text2);margin-top:3px}
+    .site-footer{text-align:center;font-size:.68rem;color:var(--text2);padding:8px 0 110px}
+
+    @media(min-width:900px){
+      .container{max-width:960px}
+      .feed{display:grid;grid-template-columns:1fr 1fr;align-items:start}
+      .ig-grid{grid-template-columns:repeat(4,1fr)}
+      .hero-img{height:320px}
+      .info-grid{grid-template-columns:repeat(4,1fr)}
+    }
+    @media(min-width:560px) and (max-width:899px){.container{padding:0}}
   </style>
 </head>
 <body>
@@ -203,7 +231,7 @@
     <!-- ═══ Hero Banner ═══ -->
     <section class="hero reveal">
       <!-- Real aerial photo of Dharwad-Hubli corridor -->
-      <img class="hero-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Panoramic_View_of_Hubli_City_from_Nrupatunga_Hill.jpg/1280px-Panoramic_View_of_Hubli_City_from_Nrupatunga_Hill.jpg" alt="Panoramic view of Hubli-Dharwad from Nrupatunga Hill" loading="eager" />
+      <img class="hero-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Panoramic_View_of_Hubli_City_from_Nrupatunga_Hill.jpg/960px-Panoramic_View_of_Hubli_City_from_Nrupatunga_Hill.jpg" alt="Panoramic view of Hubli-Dharwad from Nrupatunga Hill" loading="eager" />
       <div class="hero-gradient">
         <h2>🚌 Your Daily Route<br/><span class="highlight">Yeligar Sports → IIT Dharwad</span></h2>
         <p>Krishna Hostel, Tapovan Nagar → IIT Dharwad permanent campus (Chikkamalligawad) & nearby essentials. Real-time info, IG-style feed & reels.</p>
@@ -240,6 +268,12 @@
       </div>
     </div>
 
+    <!-- ═══ Visitor Counter ═══ -->
+    <div class="visits reveal">
+      <span class="material-icons-round">groups</span>
+      <div><div class="v-num" id="visitCount">—</div><div class="v-label">people have visited DH Transit till date</div></div>
+    </div>
+
     <!-- ═══ Tabs ═══ -->
     <div class="tabs reveal" id="mainTabs">
       <button class="tab active" data-section="feedSection">📸 Feed</button>
@@ -252,52 +286,69 @@
     <!-- ═══ IG Stories Row ═══ -->
     <div class="section-title"><span class="material-icons-round">auto_awesome</span> Stories</div>
     <div class="stories-row reveal">
-      <div class="story">
-        <div class="story-ring"><img src="https://maps.googleapis.com/maps/api/staticmap?center=15.4407,75.0093&zoom=16&size=100x100&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="Yeligar Sports" /></div>
+      <a class="story" href="https://www.google.com/maps/search/?api=1&query=Yeligar+Sports+Dharwad" target="_blank" rel="noopener">
+        <div class="story-ring"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Dharwad_BRTS_terminal.jpg/960px-Dharwad_BRTS_terminal.jpg" alt="Yeligar Sports" /></div>
         <span>Yeligar Sports</span>
-      </div>
-      <div class="story">
-        <div class="story-ring"><img src="https://maps.googleapis.com/maps/api/staticmap?center=15.4392,75.0105&zoom=16&size=100x100&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="Krishna Hostel" /></div>
+      </a>
+      <a class="story" href="https://www.google.com/maps/search/?api=1&query=Krishna+Hostel+Dharwad" target="_blank" rel="noopener">
+        <div class="story-ring"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Dharwad_BRTS_terminal.jpg/960px-Dharwad_BRTS_terminal.jpg" alt="Krishna Hostel" /></div>
         <span>Krishna Hostel</span>
-      </div>
-      <div class="story">
-        <div class="story-ring"><img src="https://maps.googleapis.com/maps/api/staticmap?center=15.4385,75.0085&zoom=16&size=100x100&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="Tapovan Nagar" /></div>
+      </a>
+      <a class="story" href="https://www.google.com/maps/search/?api=1&query=Tapovan+Nagar+Dharwad" target="_blank" rel="noopener">
+        <div class="story-ring"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Dharwad_BRTS.jpg/960px-Dharwad_BRTS.jpg" alt="Tapovan Nagar" /></div>
         <span>Tapovan Ngr</span>
-      </div>
-      <div class="story">
-        <div class="story-ring"><img src="https://maps.googleapis.com/maps/api/staticmap?center=15.4549,75.0106&zoom=16&size=100x100&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="Court Circle" /></div>
+      </a>
+      <a class="story" href="https://www.google.com/maps/search/?api=1&query=Court+Circle+Dharwad" target="_blank" rel="noopener">
+        <div class="story-ring"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Jubilee_Circle%2C_Dharwad.jpg/960px-Jubilee_Circle%2C_Dharwad.jpg" alt="Court Circle" /></div>
         <span>Court Circle</span>
-      </div>
-      <div class="story">
-        <div class="story-ring"><img src="https://maps.googleapis.com/maps/api/staticmap?center=15.4586,75.0090&zoom=16&size=100x100&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="Jubilee Circle" /></div>
+      </a>
+      <a class="story" href="https://www.google.com/maps/search/?api=1&query=Jubilee+Circle+Dharwad" target="_blank" rel="noopener">
+        <div class="story-ring"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Jubilee_Circle%2C_Dharwad.jpg/960px-Jubilee_Circle%2C_Dharwad.jpg" alt="Jubilee Circle" /></div>
         <span>Jubilee Circle</span>
-      </div>
-      <div class="story">
-        <div class="story-ring"><img src="https://maps.googleapis.com/maps/api/staticmap?center=15.4874,74.9345&zoom=15&size=100x100&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="IIT Dharwad" /></div>
+      </a>
+      <a class="story" href="https://www.google.com/maps/search/?api=1&query=IIT+Dharwad+Dharwad" target="_blank" rel="noopener">
+        <div class="story-ring"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Indian_Institute_of_Technology_Dharwad_01.jpg/960px-Indian_Institute_of_Technology_Dharwad_01.jpg" alt="IIT Dharwad" /></div>
         <span>IIT Dharwad</span>
-      </div>
-      <div class="story">
-        <div class="story-ring"><img src="https://maps.googleapis.com/maps/api/staticmap?center=15.3647,75.1240&zoom=16&size=100x100&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="Moorusavir Math" /></div>
+      </a>
+      <a class="story" href="https://www.google.com/maps/search/?api=1&query=Moorusavir+Math+Dharwad" target="_blank" rel="noopener">
+        <div class="story-ring"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Chandramouleshwara_temple_Unkal_2.JPG/960px-Chandramouleshwara_temple_Unkal_2.JPG" alt="Moorusavir Math" /></div>
         <span>Moorusavir Math</span>
-      </div>
-      <div class="story">
-        <div class="story-ring"><img src="https://maps.googleapis.com/maps/api/staticmap?center=15.4420,74.9910&zoom=16&size=100x100&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="SDM Hospital" /></div>
+      </a>
+      <a class="story" href="https://www.google.com/maps/search/?api=1&query=SDM+Hospital+Dharwad" target="_blank" rel="noopener">
+        <div class="story-ring"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/SDM_College_of_Dental_Sciences_%26_Hospital_Dharwad.jpg/960px-SDM_College_of_Dental_Sciences_%26_Hospital_Dharwad.jpg" alt="SDM Hospital" /></div>
         <span>SDM Hospital</span>
-      </div>
+      </a>
     </div>
 
     <!-- ═══════════════════ FEED SECTION ═══════════════════ -->
     <div id="feedSection" class="tab-content">
+      <div class="section-title"><span class="material-icons-round">photo_library</span> Twin City in Photos</div>
+      <div class="ig-grid reveal">
+        <a class="ig-tile" href="https://www.google.com/maps/search/?api=1&query=Nrupatunga+Betta" target="_blank" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Panoramic_View_of_Hubli_City_from_Nrupatunga_Hill.jpg/960px-Panoramic_View_of_Hubli_City_from_Nrupatunga_Hill.jpg" alt="Nrupatunga Betta" loading="lazy" /><span class="ig-cap"><span class="material-icons-round">place</span>Nrupatunga Betta</span></a>
+        <a class="ig-tile" href="https://www.google.com/maps/search/?api=1&query=IIT+Dharwad" target="_blank" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Indian_Institute_of_Technology_Dharwad_01.jpg/960px-Indian_Institute_of_Technology_Dharwad_01.jpg" alt="IIT Dharwad" loading="lazy" /><span class="ig-cap"><span class="material-icons-round">place</span>IIT Dharwad</span></a>
+        <a class="ig-tile" href="https://www.google.com/maps/search/?api=1&query=Jubilee+Circle+Dharwad" target="_blank" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/d5/Jubilee_Circle%2C_Dharwad.jpg/960px-Jubilee_Circle%2C_Dharwad.jpg" alt="Jubilee Circle Dharwad" loading="lazy" /><span class="ig-cap"><span class="material-icons-round">place</span>Jubilee Circle Dharwad</span></a>
+        <a class="ig-tile" href="https://www.google.com/maps/search/?api=1&query=Unkal+Lake+Hubli" target="_blank" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Unkal_lake.jpg/960px-Unkal_lake.jpg" alt="Unkal Lake Hubli" loading="lazy" /><span class="ig-cap"><span class="material-icons-round">place</span>Unkal Lake Hubli</span></a>
+        <a class="ig-tile" href="https://www.google.com/maps/search/?api=1&query=Chandramouleshwara+Temple+Unkal" target="_blank" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/6b/Chandramouleshwara_temple_Unkal_2.JPG/960px-Chandramouleshwara_temple_Unkal_2.JPG" alt="Chandramouleshwara Temple Unkal" loading="lazy" /><span class="ig-cap"><span class="material-icons-round">place</span>Chandramouleshwara Temple Unkal</span></a>
+        <a class="ig-tile" href="https://www.google.com/maps/search/?api=1&query=Karnatak+University+Dharwad" target="_blank" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Karnatak_University%2C_Dharwad%2C_Karnataka%2C_India_%282007%29.jpg/960px-Karnatak_University%2C_Dharwad%2C_Karnataka%2C_India_%282007%29.jpg" alt="Karnatak University Dharwad" loading="lazy" /><span class="ig-cap"><span class="material-icons-round">place</span>Karnatak University Dharwad</span></a>
+        <a class="ig-tile" href="https://www.google.com/maps/search/?api=1&query=Dharwad+BRTS+Terminal" target="_blank" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Dharwad_BRTS_terminal.jpg/960px-Dharwad_BRTS_terminal.jpg" alt="Dharwad BRTS Terminal" loading="lazy" /><span class="ig-cap"><span class="material-icons-round">place</span>Dharwad BRTS Terminal</span></a>
+        <a class="ig-tile" href="https://www.google.com/maps/search/?api=1&query=Hubli+Railway+Station" target="_blank" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/d/dc/Hubli_Railway_Station_from_the_overbridge_-_panoramio.jpg/960px-Hubli_Railway_Station_from_the_overbridge_-_panoramio.jpg" alt="Hubli Railway Station" loading="lazy" /><span class="ig-cap"><span class="material-icons-round">place</span>Hubli Railway Station</span></a>
+        <a class="ig-tile" href="https://www.google.com/maps/search/?api=1&query=Hubli+at+Night" target="_blank" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/City_of_Hubli_at_night.jpg/960px-City_of_Hubli_at_night.jpg" alt="Hubli at Night" loading="lazy" /><span class="ig-cap"><span class="material-icons-round">place</span>Hubli at Night</span></a>
+        <a class="ig-tile" href="https://www.google.com/maps/search/?api=1&query=Chigari+BRTS+Gandhinagar" target="_blank" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/HDBRTS_%28Chigri%29_at_Gandhinagar.jpg/960px-HDBRTS_%28Chigri%29_at_Gandhinagar.jpg" alt="Chigari BRTS Gandhinagar" loading="lazy" /><span class="ig-cap"><span class="material-icons-round">place</span>Chigari BRTS Gandhinagar</span></a>
+        <a class="ig-tile" href="https://www.google.com/maps/search/?api=1&query=Dharwad+Pedha" target="_blank" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Dharwad_peda.jpg/960px-Dharwad_peda.jpg" alt="Dharwad Pedha" loading="lazy" /><span class="ig-cap"><span class="material-icons-round">place</span>Dharwad Pedha</span></a>
+        <a class="ig-tile" href="https://www.google.com/maps/search/?api=1&query=SDM+Dharwad" target="_blank" rel="noopener"><img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/SDM_College_of_Dental_Sciences_%26_Hospital_Dharwad.jpg/960px-SDM_College_of_Dental_Sciences_%26_Hospital_Dharwad.jpg" alt="SDM Dharwad" loading="lazy" /><span class="ig-cap"><span class="material-icons-round">place</span>SDM Dharwad</span></a>
+      </div>
+      <p class="credit">Real photos via Wikimedia Commons • tap any photo to open it in Google Maps</p>
+
       <div class="section-title"><span class="material-icons-round">dynamic_feed</span> Transit Feed</div>
       <div class="feed">
 
         <!-- Card 1: Yeligar Sports Center -->
         <article class="feed-card reveal">
           <div class="feed-card-header">
-            <img class="feed-card-avatar" src="https://maps.googleapis.com/maps/api/staticmap?center=15.4407,75.0093&zoom=17&size=80x80&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="" />
+            <img class="feed-card-avatar" src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cc/Dharwad_BRTS_terminal.jpg/960px-Dharwad_BRTS_terminal.jpg" alt="" />
             <div class="info">
               <div class="name">Yeligar Sports Center</div>
-              <div class="loc">📍 Krishna Hostel, Tapovan Nagar, Dharwad 580007</div>
+              <a class="loc maps-link" href="https://www.google.com/maps/search/?api=1&query=Yeligar+Sports+Center+Krishna+Hostel,+Tapovan+Nagar,+Dharwad+580007" target="_blank" rel="noopener">📍 Krishna Hostel, Tapovan Nagar, Dharwad 580007</a>
             </div>
             <span class="badge badge-route">Start</span>
           </div>
@@ -319,10 +370,10 @@
         <!-- Card 2: Tapovan Nagar -->
         <article class="feed-card reveal">
           <div class="feed-card-header">
-            <img class="feed-card-avatar" src="https://maps.googleapis.com/maps/api/staticmap?center=15.4385,75.0085&zoom=17&size=80x80&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="" />
+            <img class="feed-card-avatar" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Dharwad_BRTS.jpg/960px-Dharwad_BRTS.jpg" alt="" />
             <div class="info">
               <div class="name">Tapovan Nagar</div>
-              <div class="loc">📍 Residential Area, Dharwad</div>
+              <a class="loc maps-link" href="https://www.google.com/maps/search/?api=1&query=Tapovan+Nagar+Residential+Area,+Dharwad" target="_blank" rel="noopener">📍 Residential Area, Dharwad</a>
             </div>
           </div>
           <img class="feed-card-img" src="https://images.unsplash.com/photo-1600585154340-be6161a56a0c?w=800&q=80" alt="Residential neighborhood" loading="lazy" />
@@ -343,14 +394,14 @@
         <!-- Card 3: IIT Dharwad -->
         <article class="feed-card reveal">
           <div class="feed-card-header">
-            <img class="feed-card-avatar" src="https://maps.googleapis.com/maps/api/staticmap?center=15.4874,74.9345&zoom=15&size=80x80&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="" />
+            <img class="feed-card-avatar" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7d/Indian_Institute_of_Technology_Dharwad_01.jpg/960px-Indian_Institute_of_Technology_Dharwad_01.jpg" alt="" />
             <div class="info">
               <div class="name">IIT Dharwad Campus</div>
-              <div class="loc">📍 Chikkamalligawad, Dharwad 580007</div>
+              <a class="loc maps-link" href="https://www.google.com/maps/search/?api=1&query=IIT+Dharwad+Campus+Chikkamalligawad,+Dharwad+580007" target="_blank" rel="noopener">📍 Chikkamalligawad, Dharwad 580007</a>
             </div>
             <span class="badge badge-route">End</span>
           </div>
-          <img class="feed-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Indian_Institute_of_Technology_Dharwad_02.jpg/1280px-Indian_Institute_of_Technology_Dharwad_02.jpg" alt="IIT Dharwad campus building" loading="lazy" />
+          <img class="feed-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Indian_Institute_of_Technology_Dharwad_02.jpg/960px-Indian_Institute_of_Technology_Dharwad_02.jpg" alt="IIT Dharwad campus building" loading="lazy" />
           <div class="feed-card-body">
             <p class="caption">🎓 <strong>IIT Dharwad</strong> — Indian Institute of Technology, permanent campus at Chikkamalligawad on a 470-acre estate. Buses from Dharwad city center drop you near the gate. A premier tech &amp; research powerhouse of North Karnataka! 💻</p>
           </div>
@@ -368,13 +419,13 @@
         <!-- Card 4: Karnatak University -->
         <article class="feed-card reveal">
           <div class="feed-card-header">
-            <img class="feed-card-avatar" src="https://maps.googleapis.com/maps/api/staticmap?center=15.4480,74.9980&zoom=16&size=80x80&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="" />
+            <img class="feed-card-avatar" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Karnatak_University%2C_Dharwad%2C_Karnataka%2C_India_%282007%29.jpg/960px-Karnatak_University%2C_Dharwad%2C_Karnataka%2C_India_%282007%29.jpg" alt="" />
             <div class="info">
               <div class="name">Karnatak University</div>
-              <div class="loc">📍 Pavate Nagar, Dharwad</div>
+              <a class="loc maps-link" href="https://www.google.com/maps/search/?api=1&query=Karnatak+University+Pavate+Nagar,+Dharwad" target="_blank" rel="noopener">📍 Pavate Nagar, Dharwad</a>
             </div>
           </div>
-          <img class="feed-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Karnataka-University-Dharwad.jpg/1280px-Karnataka-University-Dharwad.jpg" alt="Karnataka University campus Dharwad" loading="lazy" />
+          <img class="feed-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Karnatak_University%2C_Dharwad%2C_Karnataka%2C_India_%282007%29.jpg/960px-Karnatak_University%2C_Dharwad%2C_Karnataka%2C_India_%282007%29.jpg" alt="Karnataka University campus Dharwad" loading="lazy" />
           <div class="feed-card-body">
             <p class="caption">🏛️ <strong>Karnatak University</strong> — Dharwad's historic academic center, established 1949. Beautiful campus on the transit corridor. Well connected by NWKRTC buses from Tapovan Nagar &amp; Court Circle. 📚</p>
           </div>
@@ -392,13 +443,13 @@
         <!-- Card 5: SDM Hospital -->
         <article class="feed-card reveal">
           <div class="feed-card-header">
-            <img class="feed-card-avatar" src="https://maps.googleapis.com/maps/api/staticmap?center=15.4420,74.9910&zoom=16&size=80x80&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="" />
+            <img class="feed-card-avatar" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/SDM_College_of_Dental_Sciences_%26_Hospital_Dharwad.jpg/960px-SDM_College_of_Dental_Sciences_%26_Hospital_Dharwad.jpg" alt="" />
             <div class="info">
               <div class="name">SDM Medical College & Hospital</div>
-              <div class="loc">📍 Sattur, Dharwad</div>
+              <a class="loc maps-link" href="https://www.google.com/maps/search/?api=1&query=SDM+Medical+College+and+Hospital+Sattur,+Dharwad" target="_blank" rel="noopener">📍 Sattur, Dharwad</a>
             </div>
           </div>
-          <img class="feed-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/96/Main_building_at_SDM_College_of_Medical_Sciences_in_Dharwad.jpg/1280px-Main_building_at_SDM_College_of_Medical_Sciences_in_Dharwad.jpg" alt="SDM Medical College Dharwad" loading="lazy" />
+          <img class="feed-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/SDM_College_of_Dental_Sciences_%26_Hospital_Dharwad.jpg/960px-SDM_College_of_Dental_Sciences_%26_Hospital_Dharwad.jpg" alt="SDM Medical College Dharwad" loading="lazy" />
           <div class="feed-card-body">
             <p class="caption">🏥 <strong>SDM Medical College & Hospital</strong> — Sattur, Dharwad. A key medical landmark on the transit route. Major bus connections to both Dharwad city and Hubli. Emergency & outpatient services accessible by bus. 🩺</p>
           </div>
@@ -416,13 +467,13 @@
         <!-- Card 6: Nrupatunga Betta -->
         <article class="feed-card reveal">
           <div class="feed-card-header">
-            <img class="feed-card-avatar" src="https://maps.googleapis.com/maps/api/staticmap?center=15.3750,75.0870&zoom=15&size=80x80&maptype=satellite&key=AIzaSyBFw0Qbyq9zTFTd-tUY6dZWTgaQzuU17R8" alt="" />
+            <img class="feed-card-avatar" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Panoramic_View_of_Hubli_City_from_Nrupatunga_Hill.jpg/960px-Panoramic_View_of_Hubli_City_from_Nrupatunga_Hill.jpg" alt="" />
             <div class="info">
               <div class="name">Nrupatunga Betta</div>
-              <div class="loc">📍 Unkal Hill, Hubli-Dharwad</div>
+              <a class="loc maps-link" href="https://www.google.com/maps/search/?api=1&query=Nrupatunga+Betta+Unkal+Hill,+Hubli-Dharwad" target="_blank" rel="noopener">📍 Unkal Hill, Hubli-Dharwad</a>
             </div>
           </div>
-          <img class="feed-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/City_of_Hubli_at_night.jpg/1280px-City_of_Hubli_at_night.jpg" alt="Hubli city night view from Nrupatunga Hill" loading="lazy" />
+          <img class="feed-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/City_of_Hubli_at_night.jpg/960px-City_of_Hubli_at_night.jpg" alt="Hubli city night view from Nrupatunga Hill" loading="lazy" />
           <div class="feed-card-body">
             <p class="caption">🌄 <strong>Nrupatunga Betta</strong> — the premier hilltop viewpoint between Hubli & Dharwad. Paved walking tracks, gardens &amp; breathtaking sunsets overlooking the twin city. A must-visit just off the transit corridor! 🌇</p>
           </div>
@@ -440,14 +491,14 @@
         <!-- Card 7: Commuter Tips -->
         <article class="feed-card reveal">
           <div class="feed-card-header">
-            <img class="feed-card-avatar" src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=80&q=80" alt="" style="border-radius:50%;object-fit:cover" />
+            <img class="feed-card-avatar" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Dharwad_BRTS.jpg/960px-Dharwad_BRTS.jpg" alt="" style="border-radius:50%;object-fit:cover" />
             <div class="info">
               <div class="name">NWKRTC Transit Tips</div>
-              <div class="loc">📍 Dharwad-Hubli Twin City</div>
+              <a class="loc maps-link" href="https://www.google.com/maps/search/?api=1&query=NWKRTC+Transit+Tips+Dharwad-Hubli+Twin+City" target="_blank" rel="noopener">📍 Dharwad-Hubli Twin City</a>
             </div>
             <span class="badge badge-live">● LIVE</span>
           </div>
-          <img class="feed-card-img" src="https://images.unsplash.com/photo-1570125909232-eb263c188f7e?w=800&q=80" alt="Bus transit" loading="lazy" />
+          <img class="feed-card-img" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/7e/HDBRTS_%28Chigri%29_at_Gandhinagar.jpg/960px-HDBRTS_%28Chigri%29_at_Gandhinagar.jpg" alt="Bus transit" loading="lazy" />
           <div class="feed-card-body">
             <p class="caption">💡 <strong>Pro Tips for Commuters:</strong><br/>✅ NWKRTC buses run every 10-15 min on the DWD-HBL route<br/>✅ Carry exact change (₹15-30)<br/>✅ Auto fares: ₹10 starting + ₹15/km<br/>✅ Peak hours: 8-10 AM & 5-7 PM<br/>✅ Monthly pass saves ~40% 💰<br/>✅ BRTS Chigari buses available on main corridor</p>
           </div>
@@ -469,7 +520,7 @@
       <div class="section-title"><span class="material-icons-round">movie</span> Transit Reels</div>
       <div class="reels-row reveal">
         <div class="reel">
-          <img class="reel-bg" src="https://images.unsplash.com/photo-1544620347-c4fd4a3d5957?w=400&q=80" alt="" loading="lazy" />
+          <img class="reel-bg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Dharwad_BRTS.jpg/960px-Dharwad_BRTS.jpg" alt="" loading="lazy" />
           <div class="reel-overlay">
             <div class="reel-title">Morning Commute: Tapovan → IIT Dharwad</div>
             <div class="reel-views"><span class="material-icons-round" style="font-size:.8rem">visibility</span> 12.4K views</div>
@@ -485,7 +536,7 @@
           <div class="reel-play"><span class="material-icons-round">play_arrow</span></div>
         </div>
         <div class="reel">
-          <img class="reel-bg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/0c/City_of_Hubli_at_night.jpg/800px-City_of_Hubli_at_night.jpg" alt="" loading="lazy" />
+          <img class="reel-bg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/City_of_Hubli_at_night.jpg/960px-City_of_Hubli_at_night.jpg" alt="" loading="lazy" />
           <div class="reel-overlay">
             <div class="reel-title">Nrupatunga Betta Night View 🌃</div>
             <div class="reel-views"><span class="material-icons-round" style="font-size:.8rem">visibility</span> 15.2K views</div>
@@ -493,7 +544,7 @@
           <div class="reel-play"><span class="material-icons-round">play_arrow</span></div>
         </div>
         <div class="reel">
-          <img class="reel-bg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Indian_Institute_of_Technology_Dharwad_02.jpg/800px-Indian_Institute_of_Technology_Dharwad_02.jpg" alt="" loading="lazy" />
+          <img class="reel-bg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Indian_Institute_of_Technology_Dharwad_02.jpg/960px-Indian_Institute_of_Technology_Dharwad_02.jpg" alt="" loading="lazy" />
           <div class="reel-overlay">
             <div class="reel-title">IIT Dharwad Campus Life 🎓</div>
             <div class="reel-views"><span class="material-icons-round" style="font-size:.8rem">visibility</span> 22.1K views</div>
@@ -501,7 +552,7 @@
           <div class="reel-play"><span class="material-icons-round">play_arrow</span></div>
         </div>
         <div class="reel">
-          <img class="reel-bg" src="https://images.unsplash.com/photo-1601050690597-df0568f70950?w=400&q=80" alt="" loading="lazy" />
+          <img class="reel-bg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Dharwad_peda.jpg/960px-Dharwad_peda.jpg" alt="" loading="lazy" />
           <div class="reel-overlay">
             <div class="reel-title">Dharwad Pedha & Food Trail 🍛</div>
             <div class="reel-views"><span class="material-icons-round" style="font-size:.8rem">visibility</span> 31.5K views</div>
@@ -509,7 +560,7 @@
           <div class="reel-play"><span class="material-icons-round">play_arrow</span></div>
         </div>
         <div class="reel">
-          <img class="reel-bg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/e2/Karnataka-University-Dharwad.jpg/800px-Karnataka-University-Dharwad.jpg" alt="" loading="lazy" />
+          <img class="reel-bg" src="https://upload.wikimedia.org/wikipedia/commons/thumb/8/87/Karnatak_University%2C_Dharwad%2C_Karnataka%2C_India_%282007%29.jpg/960px-Karnatak_University%2C_Dharwad%2C_Karnataka%2C_India_%282007%29.jpg" alt="" loading="lazy" />
           <div class="reel-overlay">
             <div class="reel-title">Karnatak University Heritage Walk 🏛️</div>
             <div class="reel-views"><span class="material-icons-round" style="font-size:.8rem">visibility</span> 9.3K views</div>
@@ -522,7 +573,7 @@
       <div class="section-title"><span class="material-icons-round">swipe_up</span> Full Reels</div>
       <div class="feed">
         <div class="full-reel">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/5/52/Panoramic_View_of_Hubli_City_from_Nrupatunga_Hill.jpg/1280px-Panoramic_View_of_Hubli_City_from_Nrupatunga_Hill.jpg" alt="Hubli-Dharwad Panorama" loading="lazy" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Panoramic_View_of_Hubli_City_from_Nrupatunga_Hill.jpg/960px-Panoramic_View_of_Hubli_City_from_Nrupatunga_Hill.jpg" alt="Hubli-Dharwad Panorama" loading="lazy" />
           <div class="reel-overlay" style="padding:24px">
             <span class="badge badge-live" style="width:fit-content;margin-bottom:8px">● TRENDING</span>
             <div class="reel-title" style="font-size:1.1rem">Complete Route Guide: Yeligar Sports Center → IIT Dharwad</div>
@@ -533,7 +584,7 @@
         </div>
 
         <div class="full-reel">
-          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/a/ab/Indian_Institute_of_Technology_Dharwad_02.jpg/1280px-Indian_Institute_of_Technology_Dharwad_02.jpg" alt="IIT Dharwad" loading="lazy" />
+          <img src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f1/Indian_Institute_of_Technology_Dharwad_02.jpg/960px-Indian_Institute_of_Technology_Dharwad_02.jpg" alt="IIT Dharwad" loading="lazy" />
           <div class="reel-overlay" style="padding:24px">
             <div class="reel-title" style="font-size:1.1rem">IIT Dharwad — 470 Acre Campus Tour 🎓</div>
             <p style="font-size:.78rem;color:rgba(255,255,255,.7);margin-top:6px;line-height:1.5">Inside the permanent campus: academic blocks, labs, hostels, sports facilities, and the stunning Karnataka landscape. A day in the life at IIT Dharwad!</p>
@@ -551,7 +602,7 @@
       <!-- Embedded Google Maps with Directions -->
       <div class="map-wrapper reveal">
         <iframe
-          src="https://www.google.com/maps/embed?pb=!1m28!1m12!1m3!1d61500!2d74.95!3d15.46!2m3!1f0!2f0!3f0!3m2!1i1024!2i768!4f13.1!4m13!3e0!4m5!1s0x3bbf34b14c0569c5%3A0xda7354e4345ef40a!2sYeligar%20Sports%20Arena%2C%20Tapovan%20Nagar%2C%20Dharwad%2C%20Karnataka%20580007!3m2!1d15.4407!2d75.0093!4m5!1s0x3bbf30e42b1a6e5f%3A0x2a11b tried0ed3b48!2sIIT%20Dharwad%2C%20Karnataka!3m2!1d15.4874!2d74.9345!5e0!3m2!1sen!2sin!4v1699000000000!5m2!1sen!2sin"
+          src="https://maps.google.com/maps?saddr=Yeligar+Sports+Arena,+Tapovan+Nagar,+Dharwad&daddr=IIT+Dharwad,+Chikkamalligawad&output=embed"
           allowfullscreen loading="lazy" referrerpolicy="no-referrer-when-downgrade">
         </iframe>
       </div>
@@ -738,6 +789,7 @@
       </div>
     </div>
 
+    <footer class="site-footer">Made for Dharwad ↔ Hubli commuters • Photos: Wikimedia Commons (CC BY-SA)</footer>
   </main>
 
   <!-- ═══ Bottom Navigation ═══ -->
@@ -824,6 +876,22 @@
     document.querySelectorAll('.modal-backdrop').forEach(m => {
       m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
     });
+
+    // ── Visitor Counter (abacus.jasoncameron.dev, counts once per browser session) ──
+    (async () => {
+      const el = document.getElementById('visitCount');
+      const base = 'https://abacus.jasoncameron.dev';
+      let counted = false;
+      try { counted = sessionStorage.getItem('dhVisited') === '1'; } catch (e) {}
+      try {
+        const r = await fetch(`${base}/${counted ? 'get' : 'hit'}/dh-transit-neeraj/visits`);
+        const { value } = await r.json();
+        try { sessionStorage.setItem('dhVisited', '1'); } catch (e) {}
+        const end = Number(value) || 0, t0 = performance.now();
+        const step = now => { const p = Math.min((now - t0) / 1200, 1); el.textContent = Math.round(end * (1 - Math.pow(1 - p, 3))).toLocaleString('en-IN'); if (p < 1) requestAnimationFrame(step); };
+        requestAnimationFrame(step);
+      } catch (e) { el.textContent = '—'; }
+    })();
 
     // ── Scroll Reveal ──
     const observer = new IntersectionObserver((entries) => {
