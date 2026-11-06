@@ -3,6 +3,9 @@
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="X-Content-Type-Options" content="nosniff" />
+  <meta name="referrer" content="strict-origin-when-cross-origin" />
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self' 'unsafe-inline' https:; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://cdnjs.cloudflare.com; style-src 'self' 'unsafe-inline' https://fonts.googleapis.com https://fonts.gstatic.com; font-src 'self' https://fonts.gstatic.com data:; img-src 'self' data: https: blob:; connect-src 'self' https://abacus.jasoncameron.dev; frame-src https://www.google.com https://maps.google.com; object-src 'none'; base-uri 'self';" />
   <title>Krishna Hostel Hub — IIT Dharwad Student Community Guide</title>
   <link rel="preconnect" href="https://fonts.googleapis.com" />
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -95,11 +98,27 @@
     .feed-card-body{padding:14px}
     .feed-card-body .caption{font-size:.82rem;line-height:1.55;color:var(--text)}
     .feed-card-body .caption strong{color:var(--accent2)}
-    .feed-card-actions{display:flex;gap:16px;padding:0 14px 12px}
-    .feed-card-actions button{background:none;color:var(--text2);font-size:1.2rem;display:flex;align-items:center;gap:4px;transition:.2s}
-    .feed-card-actions button span.count{font-size:.75rem;font-weight:600}
+    .feed-card-actions{display:flex;gap:16px;padding:0 14px 12px;position:relative}
+    .feed-card-actions button{background:none;color:var(--text2);font-size:1.2rem;display:flex;align-items:center;gap:4px;transition:color .2s,transform .2s;position:relative;cursor:pointer}
+    .feed-card-actions button:active{transform:scale(.92)}
+    .feed-card-actions button span.count{font-size:.75rem;font-weight:600;font-variant-numeric:tabular-nums}
     .feed-card-actions button:hover{color:var(--accent3)}
-    .feed-card-actions button.liked{color:var(--accent3)}
+    .feed-card-actions button.liked{color:#ff4757}
+    .feed-card-actions button.liked .material-icons-round{animation:heartPop .35s ease;color:#ff4757}
+    .feed-card-actions button.liked span.count{color:#ff4757}
+    @keyframes heartPop{0%{transform:scale(1)}40%{transform:scale(1.4)}70%{transform:scale(.88)}100%{transform:scale(1)}}
+
+    .float-heart{position:absolute;color:#ff4757;font-size:.78rem;font-weight:800;pointer-events:none;animation:floatHeart 1.4s ease-out forwards;z-index:40;display:flex;align-items:center;gap:2px}
+    @keyframes floatHeart{0%{opacity:1;transform:translateY(0) scale(1)}100%{opacity:0;transform:translateY(-28px) scale(1.3)}}
+
+    /* ───────── Comments Modal Styling ───────── */
+    .comment-card{background:rgba(255,255,255,.03);border:1px solid var(--border);border-radius:12px;padding:10px 12px;display:flex;flex-direction:column;gap:4px;animation:fadeSlideIn .3s ease}
+    .comment-card.new-comment{border-color:var(--accent);background:rgba(108,92,231,.08)}
+    .comment-card .c-header{display:flex;justify-content:space-between;align-items:center}
+    .comment-card .c-author{font-size:.78rem;font-weight:700;color:var(--text);display:flex;align-items:center;gap:6px}
+    .comment-card .c-time{font-size:.65rem;color:var(--text2)}
+    .comment-card .c-body{font-size:.78rem;color:var(--text);line-height:1.4}
+    @keyframes fadeSlideIn{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
     .feed-card-tags{display:flex;gap:6px;padding:0 14px 14px;flex-wrap:wrap}
     .feed-card-tags span{font-size:.65rem;color:var(--accent);background:rgba(108,92,231,.12);padding:3px 8px;border-radius:8px}
 
@@ -301,7 +320,7 @@
       <div class="feed">
 
         <!-- Card 1: Hotel Amrutha Sagar -->
-        <article class="feed-card reveal">
+        <article class="feed-card reveal" data-post-id="amrutha-sagar">
           <div class="feed-card-header">
             <img class="feed-card-avatar" src="https://images.unsplash.com/photo-1589301760014-d929f3979dbc?w=100&q=80" alt="Dosa" />
             <div class="info">
@@ -314,9 +333,9 @@
           <div class="feed-card-body">
             <p class="caption">🥞 <strong>Your Daily Breakfast Lifesaver</strong> — Closest full-service veg restaurant right down the road from Krishna Hostel. Famous for piping hot Masala Dosa, Thatte Idli, Filter Coffee, and budget South/North Indian lunch thalis (₹70–120). Perfect mess alternative!</p>
           </div>
-          <div class="feed-card-actions">
+          <div class="feed-card-actions" data-post-id="amrutha-sagar">
             <button onclick="toggleLike(this)"><span class="material-icons-round">favorite_border</span><span class="count">318</span></button>
-            <button onclick="showToast('Tip: Try the set dosa & filter coffee')"><span class="material-icons-round">chat_bubble_outline</span><span class="count">48</span></button>
+            <button onclick="openComments(this)"><span class="material-icons-round">chat_bubble_outline</span><span class="count">48</span></button>
             <button onclick="sharePost('Hotel Amrutha Sagar', 'Closest breakfast & thali spot to Krishna Hostel!')"><span class="material-icons-round">share</span></button>
             <button onclick="toggleBookmark(this)"><span class="material-icons-round">bookmark_border</span></button>
           </div>
@@ -326,7 +345,7 @@
         </article>
 
         <!-- Card 2: Ice Zone -->
-        <article class="feed-card reveal">
+        <article class="feed-card reveal" data-post-id="ice-zone">
           <div class="feed-card-header">
             <img class="feed-card-avatar" src="https://images.unsplash.com/photo-1626777552726-4a6b54c97e46?w=100&q=80" alt="Paneer Roll" />
             <div class="info">
@@ -339,9 +358,9 @@
           <div class="feed-card-body">
             <p class="caption">🌯 <strong>The Legendary Paneer Roll Spot</strong> — Ask any student in Dharwad! Famous for massive, sauce-loaded Paneer Rolls, Veg Cutlets, Cold Shakes, and budget fast food. Costs ₹60–100 per heavy roll. Always buzzing in the evenings!</p>
           </div>
-          <div class="feed-card-actions">
+          <div class="feed-card-actions" data-post-id="ice-zone">
             <button onclick="toggleLike(this)"><span class="material-icons-round">favorite_border</span><span class="count">642</span></button>
-            <button onclick="showToast('Order: Double Paneer Cheese Roll!')"><span class="material-icons-round">chat_bubble_outline</span><span class="count">89</span></button>
+            <button onclick="openComments(this)"><span class="material-icons-round">chat_bubble_outline</span><span class="count">89</span></button>
             <button onclick="sharePost('Ice Zone Dharwad', 'Best budget student rolls and quick bites in town!')"><span class="material-icons-round">share</span></button>
             <button onclick="toggleBookmark(this)"><span class="material-icons-round">bookmark_border</span></button>
           </div>
@@ -351,7 +370,7 @@
         </article>
 
         <!-- Card 3: The Doorway Cafe -->
-        <article class="feed-card reveal">
+        <article class="feed-card reveal" data-post-id="doorway-cafe">
           <div class="feed-card-header">
             <img class="feed-card-avatar" src="https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=100&q=80" alt="Cafe" />
             <div class="info">
@@ -364,9 +383,9 @@
           <div class="feed-card-body">
             <p class="caption">☕ <strong>Top Hangout & Board Game Cafe</strong> — Aesthetic ambience with indoor & open-air seating, board games (Catan, Jenga, Uno), peri-peri fries, loaded burgers, thick shakes, and pasta. The go-to weekend hangout for hostel friend groups.</p>
           </div>
-          <div class="feed-card-actions">
+          <div class="feed-card-actions" data-post-id="doorway-cafe">
             <button onclick="toggleLike(this)"><span class="material-icons-round">favorite_border</span><span class="count">489</span></button>
-            <button onclick="showToast('Board games available at the counter!')"><span class="material-icons-round">chat_bubble_outline</span><span class="count">62</span></button>
+            <button onclick="openComments(this)"><span class="material-icons-round">chat_bubble_outline</span><span class="count">62</span></button>
             <button onclick="sharePost('The Doorway Cafe', 'Great hangout spot with board games and shakes')"><span class="material-icons-round">share</span></button>
             <button onclick="toggleBookmark(this)"><span class="material-icons-round">bookmark_border</span></button>
           </div>
@@ -376,7 +395,7 @@
         </article>
 
         <!-- Card 4: Basaveshwara Khanavali -->
-        <article class="feed-card reveal">
+        <article class="feed-card reveal" data-post-id="basaveshwara-khanavali">
           <div class="feed-card-header">
             <img class="feed-card-avatar" src="https://upload.wikimedia.org/wikipedia/commons/thumb/6/66/Dharwad_BRTS.jpg/960px-Dharwad_BRTS.jpg" alt="Khanavali" />
             <div class="info">
@@ -389,9 +408,9 @@
           <div class="feed-card-body">
             <p class="caption">🌾 <strong>Authentic North Karnataka Jolada Roti Oota</strong> — Craving wholesome home-style food? Unlimited Jowar Roti, spicy stuffed Ennegayi (brinjal), Shenga (peanut) chutney pudi, spicy saaru, fresh curd, and buttermilk for ₹100–120. A pure Dharwad cultural experience!</p>
           </div>
-          <div class="feed-card-actions">
+          <div class="feed-card-actions" data-post-id="basaveshwara-khanavali">
             <button onclick="toggleLike(this)"><span class="material-icons-round">favorite_border</span><span class="count">537</span></button>
-            <button onclick="showToast('Unlimited refills of roti & ennegayi!')"><span class="material-icons-round">chat_bubble_outline</span><span class="count">73</span></button>
+            <button onclick="openComments(this)"><span class="material-icons-round">chat_bubble_outline</span><span class="count">73</span></button>
             <button onclick="sharePost('Basaveshwara Khanavali', 'Must-try authentic Jolada Roti meals in Dharwad')"><span class="material-icons-round">share</span></button>
             <button onclick="toggleBookmark(this)"><span class="material-icons-round">bookmark_border</span></button>
           </div>
@@ -401,7 +420,7 @@
         </article>
 
         <!-- Card 5: Babu Singh Thakur Pedha & Street Girmit -->
-        <article class="feed-card reveal">
+        <article class="feed-card reveal" data-post-id="thakur-pedha">
           <div class="feed-card-header">
             <img class="feed-card-avatar" src="https://upload.wikimedia.org/wikipedia/commons/thumb/0/01/Dharwad_peda.jpg/960px-Dharwad_peda.jpg" alt="Dharwad Peda" />
             <div class="info">
@@ -414,9 +433,9 @@
           <div class="feed-card-body">
             <p class="caption">🍬 <strong>The Original 175-Year Heritage Pedha</strong> — Started in 1846 at Line Bazaar. Rich caramelised mawa rolled in fine sugar. Take a box home to family! Right nearby in the evening, grab spicy <strong>Girmit</strong> (puffed rice with masala) & crispy <strong>Mirchi Bhajji</strong> for ₹20.</p>
           </div>
-          <div class="feed-card-actions">
+          <div class="feed-card-actions" data-post-id="thakur-pedha">
             <button onclick="toggleLike(this)"><span class="material-icons-round">favorite_border</span><span class="count">782</span></button>
-            <button onclick="showToast('Line Bazaar shop is the original 1846 branch!')"><span class="material-icons-round">chat_bubble_outline</span><span class="count">112</span></button>
+            <button onclick="openComments(this)"><span class="material-icons-round">chat_bubble_outline</span><span class="count">112</span></button>
             <button onclick="sharePost('Babu Singh Thakur Pedha', 'Original Dharwad Pedha from Line Bazaar')"><span class="material-icons-round">share</span></button>
             <button onclick="toggleBookmark(this)"><span class="material-icons-round">bookmark_border</span></button>
           </div>
@@ -571,7 +590,7 @@
 
       <div class="feed">
         <!-- Card 1: Study Zone Library -->
-        <article class="feed-card reveal">
+        <article class="feed-card reveal" data-post-id="study-zone">
           <div class="feed-card-header">
             <img class="feed-card-avatar" src="https://images.unsplash.com/photo-1521587760476-6c12a4b040da?w=100&q=80" alt="Library" />
             <div class="info">
@@ -584,9 +603,9 @@
           <div class="feed-card-body">
             <p class="caption">📖 <strong>Modern Air-Conditioned Student Study Center</strong> — Individual private cubicles, dedicated laptop charging sockets, high-speed Wi-Fi, ergonomic study chairs, RO drinking water, and zero-distraction quiet zones. Flexible daily & monthly passes available. Open early till late night for semester & competitive exams!</p>
           </div>
-          <div class="feed-card-actions">
+          <div class="feed-card-actions" data-post-id="study-zone">
             <button onclick="toggleLike(this)"><span class="material-icons-round">favorite_border</span><span class="count">389</span></button>
-            <button onclick="showToast('Has individual AC cubicles & charging points')"><span class="material-icons-round">info</span><span class="count">Wi-Fi + AC</span></button>
+            <button onclick="openComments(this)"><span class="material-icons-round">chat_bubble_outline</span><span class="count">56</span></button>
             <button onclick="sharePost('Study Zone Library Saptapur', 'Quiet AC study desks with Wi-Fi near Krishna Hostel')"><span class="material-icons-round">share</span></button>
             <button onclick="toggleBookmark(this)"><span class="material-icons-round">bookmark_border</span></button>
           </div>
@@ -659,7 +678,7 @@
 
       <div class="feed">
         <!-- Card 1: State Bank of India -->
-        <article class="feed-card reveal">
+        <article class="feed-card reveal" data-post-id="sbi-saptapur">
           <div class="feed-card-header">
             <img class="feed-card-avatar" src="https://images.unsplash.com/photo-1501167786227-4cba60f6d58f?w=100&q=80" alt="Bank" />
             <div class="info">
@@ -672,9 +691,9 @@
           <div class="feed-card-body">
             <p class="caption">🏦 <strong>Primary Student Banking & 24/7 CDM Deposit</strong> — The most essential bank for college students. Handles student zero-balance accounts, scholarships, education loans, and debit card re-issuance. Equipped with 24/7 Cash Deposit Machine (CDM) for instant fee deposits without queueing.</p>
           </div>
-          <div class="feed-card-actions">
+          <div class="feed-card-actions" data-post-id="sbi-saptapur">
             <button onclick="toggleLike(this)"><span class="material-icons-round">favorite_border</span><span class="count">452</span></button>
-            <button onclick="showToast('Has 24/7 Cash Deposit Machine (CDM)')"><span class="material-icons-round">credit_card</span><span class="count">24/7 CDM</span></button>
+            <button onclick="openComments(this)"><span class="material-icons-round">chat_bubble_outline</span><span class="count">41</span></button>
             <button onclick="sharePost('SBI Saptapur Branch & ATM', 'Closest major SBI branch and CDM for student banking')"><span class="material-icons-round">share</span></button>
             <button onclick="toggleBookmark(this)"><span class="material-icons-round">bookmark_border</span></button>
           </div>
@@ -746,7 +765,7 @@
       
       <div class="feed">
         <!-- Card 1: SDM Medical College & Hospital -->
-        <article class="feed-card reveal">
+        <article class="feed-card reveal" data-post-id="sdm-hospital">
           <div class="feed-card-header">
             <img class="feed-card-avatar" src="https://upload.wikimedia.org/wikipedia/commons/thumb/f/f9/SDM_College_of_Dental_Sciences_%26_Hospital_Dharwad.jpg/960px-SDM_College_of_Dental_Sciences_%26_Hospital_Dharwad.jpg" alt="SDM Hospital" />
             <div class="info">
@@ -759,9 +778,9 @@
           <div class="feed-card-body">
             <p class="caption">🏥 <strong>Primary Emergency & Super-Specialty Hospital</strong> — The premier medical destination between Dharwad & Hubli. 24/7 Trauma Care, Emergency Casualty, ICU, in-house diagnostics, trauma center, pharmacy, and ambulance service. Keep this on speed-dial!</p>
           </div>
-          <div class="feed-card-actions">
+          <div class="feed-card-actions" data-post-id="sdm-hospital">
             <button onclick="toggleLike(this)"><span class="material-icons-round">favorite_border</span><span class="count">412</span></button>
-            <button onclick="showToast('24/7 Casualty & Ambulance available')"><span class="material-icons-round">call</span><span class="count">Emergency</span></button>
+            <button onclick="openComments(this)"><span class="material-icons-round">chat_bubble_outline</span><span class="count">34</span></button>
             <button onclick="sharePost('SDM Hospital Sattur', 'Premier 24/7 medical hospital for students in Dharwad')"><span class="material-icons-round">share</span></button>
             <button onclick="toggleBookmark(this)"><span class="material-icons-round">bookmark_border</span></button>
           </div>
@@ -950,7 +969,7 @@
       <div class="feed">
 
         <!-- Sadhankeri Lake -->
-        <article class="feed-card reveal">
+        <article class="feed-card reveal" data-post-id="sadhankeri-lake">
           <div class="feed-card-header">
             <img class="feed-card-avatar" src="https://upload.wikimedia.org/wikipedia/commons/thumb/7/77/Unkal_lake.jpg/960px-Unkal_lake.jpg" alt="Sadhankeri Lake" />
             <div class="info">
@@ -963,9 +982,9 @@
           <div class="feed-card-body">
             <p class="caption">🌅 <strong>The Closest Peaceful Evening Chill Spot</strong> — Just down the road from Tapovan! Paved walking tracks around the lake, lush trees, evening breeze, and the memorial of legendary Kannada poet Da.Ra. Bendre. Perfect for a refreshing run, study break, or evening stroll.</p>
           </div>
-          <div class="feed-card-actions">
+          <div class="feed-card-actions" data-post-id="sadhankeri-lake">
             <button onclick="toggleLike(this)"><span class="material-icons-round">favorite_border</span><span class="count">619</span></button>
-            <button onclick="showToast('Best sunset view between 5:30 and 6:30 PM')"><span class="material-icons-round">chat_bubble_outline</span><span class="count">81</span></button>
+            <button onclick="openComments(this)"><span class="material-icons-round">chat_bubble_outline</span><span class="count">81</span></button>
             <button onclick="sharePost('Sadhankeri Lake', 'Closest green lakeside park to Krishna Hostel')"><span class="material-icons-round">share</span></button>
             <button onclick="toggleBookmark(this)"><span class="material-icons-round">bookmark_border</span></button>
           </div>
@@ -975,7 +994,7 @@
         </article>
 
         <!-- Nrupatunga Betta -->
-        <article class="feed-card reveal">
+        <article class="feed-card reveal" data-post-id="nrupatunga-betta">
           <div class="feed-card-header">
             <img class="feed-card-avatar" src="https://upload.wikimedia.org/wikipedia/commons/thumb/9/93/Panoramic_View_of_Hubli_City_from_Nrupatunga_Hill.jpg/960px-Panoramic_View_of_Hubli_City_from_Nrupatunga_Hill.jpg" alt="Nrupatunga Hill" />
             <div class="info">
@@ -988,9 +1007,9 @@
           <div class="feed-card-body">
             <p class="caption">🌄 <strong>Panoramic Sunset & Twin City Horizon</strong> — Dharwad-Hubli's best hilltop viewpoint. Clean walkways, gardens, open gym, and cool breeze overlooking the entire valley and lake. Take a bike or shared ride with friends on Saturday evenings!</p>
           </div>
-          <div class="feed-card-actions">
+          <div class="feed-card-actions" data-post-id="nrupatunga-betta">
             <button onclick="toggleLike(this)"><span class="material-icons-round">favorite_border</span><span class="count">894</span></button>
-            <button onclick="showToast('Entry ticket is ₹10. Amazing at dusk!')"><span class="material-icons-round">chat_bubble_outline</span><span class="count">139</span></button>
+            <button onclick="openComments(this)"><span class="material-icons-round">chat_bubble_outline</span><span class="count">139</span></button>
             <button onclick="sharePost('Nrupatunga Betta', 'Top sunset viewpoint in the twin city!')"><span class="material-icons-round">share</span></button>
             <button onclick="toggleBookmark(this)"><span class="material-icons-round">bookmark_border</span></button>
           </div>
@@ -1000,7 +1019,7 @@
         </article>
 
         <!-- Urban Oasis Mall -->
-        <article class="feed-card reveal">
+        <article class="feed-card reveal" data-post-id="urban-oasis">
           <div class="feed-card-header">
             <img class="feed-card-avatar" src="https://upload.wikimedia.org/wikipedia/commons/thumb/b/b4/City_of_Hubli_at_night.jpg/960px-City_of_Hubli_at_night.jpg" alt="Mall" />
             <div class="info">
@@ -1013,9 +1032,9 @@
           <div class="feed-card-body">
             <p class="caption">🎬 <strong>Movies, Food Court & Shopping</strong> — The premier 4-floor shopping mall in the region. 5-screen PVR multiplex for blockbuster movies, large food court (McDonald's, Domino's, KFC), game arcade, and lifestyle brands. Great Sunday escape.</p>
           </div>
-          <div class="feed-card-actions">
+          <div class="feed-card-actions" data-post-id="urban-oasis">
             <button onclick="toggleLike(this)"><span class="material-icons-round">favorite_border</span><span class="count">741</span></button>
-            <button onclick="showToast('Take BRTS to Hosur, then 5 min auto!')"><span class="material-icons-round">chat_bubble_outline</span><span class="count">98</span></button>
+            <button onclick="openComments(this)"><span class="material-icons-round">chat_bubble_outline</span><span class="count">98</span></button>
             <button onclick="sharePost('Urban Oasis Mall Hubli', 'Movie weekend and food court with friends')"><span class="material-icons-round">share</span></button>
             <button onclick="toggleBookmark(this)"><span class="material-icons-round">bookmark_border</span></button>
           </div>
@@ -1116,7 +1135,123 @@
     </div>
   </div>
 
+  <!-- ═══ Comments & Community Tips Modal ═══ -->
+  <div class="modal-backdrop" id="commentsModal">
+    <div class="modal" style="max-height:85vh;display:flex;flex-direction:column">
+      <div style="display:flex;justify-content:space-between;align-items:start;margin-bottom:12px;padding-bottom:10px;border-bottom:1px solid var(--border)">
+        <div>
+          <h3 id="commentsModalTitle" style="font-size:.95rem;margin:0;display:flex;align-items:center;gap:6px">
+            <span class="material-icons-round" style="color:var(--accent2);font-size:1.15rem">chat</span>
+            <span>Student Tips & Reviews</span>
+          </h3>
+          <p id="commentsModalSubtitle" style="font-size:.72rem;color:var(--text2);margin-top:2px">Verified tips from Krishna Hostel & IIT Dharwad students</p>
+        </div>
+        <button class="modal-close" onclick="closeModal('commentsModal')" style="position:static" aria-label="Close comments"><span class="material-icons-round">close</span></button>
+      </div>
+
+      <!-- Comment list container -->
+      <div id="commentsList" style="flex:1;overflow-y:auto;display:flex;flex-direction:column;gap:10px;padding-right:4px;margin-bottom:14px;max-height:340px"></div>
+
+      <!-- Add Comment Form -->
+      <form id="commentForm" onsubmit="submitComment(event)" style="border-top:1px solid var(--border);padding-top:12px;display:flex;flex-direction:column;gap:8px">
+        <div style="display:flex;gap:8px">
+          <input id="commentAuthor" type="text" placeholder="Your Name / Room (e.g. Aryan, Krishna 204)" required style="flex:1;padding:8px 12px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.78rem;font-family:var(--font);outline:none" />
+        </div>
+        <div style="display:flex;gap:8px">
+          <input id="commentText" type="text" placeholder="Share a tip, must-try dish, or review..." required style="flex:1;padding:8px 12px;border-radius:10px;border:1px solid var(--border);background:var(--card);color:var(--text);font-size:.78rem;font-family:var(--font);outline:none" />
+          <button type="submit" style="background:var(--grad1);color:#fff;border-radius:10px;padding:8px 16px;font-size:.78rem;font-weight:700;display:flex;align-items:center;gap:4px;cursor:pointer;white-space:nowrap">
+            <span class="material-icons-round" style="font-size:1rem">send</span> Post
+          </button>
+        </div>
+      </form>
+    </div>
+  </div>
+
   <script>
+    // ══════════════════════════════════════════════════════════════
+    // 🛡️ SECURITY & ANTI-INSPECT / DEVTOOLS PROTECTION
+    // ══════════════════════════════════════════════════════════════
+
+    // 1. Clickjacking Protection (Frameguard)
+    if (window.top !== window.self) {
+      try { window.top.location = window.self.location; } catch (e) { window.location = 'about:blank'; }
+    }
+
+    // 2. Strict XSS Sanitization
+    function escapeHtml(str) {
+      if (!str) return '';
+      return String(str)
+        .replace(/&/g, '&amp;')
+        .replace(/</g, '&lt;')
+        .replace(/>/g, '&gt;')
+        .replace(/"/g, '&quot;')
+        .replace(/'/g, '&#39;');
+    }
+
+    // 3. Cheeky Developer Console Banner
+    function printDevGreeting() {
+      console.log(
+        '%c🚀 Krishna Hostel Hub • IIT Dharwad\n%c👀 Happy to see a dev in town! 👨‍💻🎒\n%cLooking under the hood? Everything here is crafted by & for students living near Yeligar Sports, Tapovan Nagar.\n\nGot frontend or backend ideas? Join our turf match downstairs or grab a Masala Dosa at Amrutha Sagar! 🥞🏏\n\nAll routes, verified distances & transit schedules are curated live for IITDh students.',
+        'font-size:18px;font-weight:900;color:#a78bfa;',
+        'font-size:15px;font-weight:800;color:#ff4757;background:rgba(255,71,87,.12);padding:4px 8px;border-radius:6px;display:inline-block;margin:6px 0;',
+        'font-size:12px;color:#a6a3b8;line-height:1.6;'
+      );
+    }
+    printDevGreeting();
+
+    // 4. Disable Right-Click (Context Menu) with Cheeky Message
+    document.addEventListener('contextmenu', (e) => {
+      e.preventDefault();
+      showToast('👀 Happy to see a dev in town! Welcome to Krishna Hostel Hub 👨‍💻🎒');
+      return false;
+    });
+
+    // 5. Disable DevTools Keyboard Shortcuts
+    document.addEventListener('keydown', (e) => {
+      const isDevShortcut = 
+        e.key === 'F12' ||
+        (e.ctrlKey && e.shiftKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
+        (e.metaKey && e.altKey && (e.key === 'I' || e.key === 'i' || e.key === 'J' || e.key === 'j' || e.key === 'C' || e.key === 'c')) ||
+        (e.ctrlKey && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's')) ||
+        (e.metaKey && (e.key === 'U' || e.key === 'u' || e.key === 'S' || e.key === 's'));
+
+      if (isDevShortcut) {
+        e.preventDefault();
+        e.stopPropagation();
+        showToast('👀 Happy to see a dev in town! No secrets here — all verified hostel hacks 🚀');
+        printDevGreeting();
+        return false;
+      }
+
+      if (e.key === 'Escape') {
+        document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
+      }
+    });
+
+    // 6. DevTools Open Detection
+    (() => {
+      const threshold = 160;
+      let devtoolsDetected = false;
+      setInterval(() => {
+        const widthDiff = window.outerWidth - window.innerWidth > threshold;
+        const heightDiff = window.outerHeight - window.innerHeight > threshold;
+        if (widthDiff || heightDiff) {
+          if (!devtoolsDetected) {
+            devtoolsDetected = true;
+            try { console.clear(); } catch (e) {}
+            printDevGreeting();
+            showToast('👀 Happy to see a dev in town! Welcome to Krishna Hostel Hub 👨‍💻');
+          }
+        } else {
+          devtoolsDetected = false;
+        }
+      }, 1500);
+    })();
+
+    // ══════════════════════════════════════════════════════════════
+    // 📱 INTERACTIVE UI & NAVIGATION
+    // ══════════════════════════════════════════════════════════════
+
     // ── Tab Switching ──
     function switchTab(sectionId) {
       document.querySelectorAll('.tab-content').forEach(s => s.style.display = 'none');
@@ -1141,21 +1276,6 @@
     document.querySelectorAll('.tab, .bnav').forEach(btn => {
       btn.addEventListener('click', () => switchTab(btn.dataset.section));
     });
-
-    // ── Like Toggle ──
-    function toggleLike(btn) {
-      btn.classList.toggle('liked');
-      const icon = btn.querySelector('.material-icons-round');
-      const count = btn.querySelector('.count');
-      if (btn.classList.contains('liked')) {
-        icon.textContent = 'favorite';
-        count.textContent = parseInt(count.textContent) + 1;
-        showToast('Liked! Added to favorites ❤️');
-      } else {
-        icon.textContent = 'favorite_border';
-        count.textContent = parseInt(count.textContent) - 1;
-      }
-    }
 
     // ── Share Post ──
     async function sharePost(title, text) {
@@ -1209,10 +1329,325 @@
       t.timer = setTimeout(() => {
         t.style.opacity = '0';
         t.style.transform = 'translateX(-50%) translateY(10px)';
-      }, 2200);
+      }, 2400);
     }
 
-    // ── Comprehensive Student Search Dataset with Synonyms & Keywords ──
+    // ══════════════════════════════════════════════════════════════
+    // ❤️ LIVE LIKE COUNTER & COMMUNITY COMMENTS
+    // ══════════════════════════════════════════════════════════════
+
+    const POST_DATA = {
+      "amrutha-sagar": {
+        name: "Hotel Amrutha Sagar",
+        baseLikes: 318,
+        baseComments: 48,
+        comments: [
+          { author: "Nikhil (B.Tech '25)", time: "2h ago", text: "Best Masala Dosa within walking distance from Krishna Hostel. Filter coffee is ₹15 and hits the spot before 8:30 AM lectures." },
+          { author: "Sneha (M.Tech)", time: "Yesterday", text: "Veg lunch thali has unlimited rice and piping hot rasam for ₹80. Super lifesaver on weekends!" }
+        ]
+      },
+      "ice-zone": {
+        name: "Ice Zone (Student Legend)",
+        baseLikes: 642,
+        baseComments: 89,
+        comments: [
+          { author: "Aditya (CSE 3rd Yr)", time: "1h ago", text: "Double Paneer Cheese Roll with mint mayo is peak 10 PM comfort food after lab." },
+          { author: "Rohan (Krishna 102)", time: "2d ago", text: "Always ask for extra mayo. Chocolate shake is thick and ₹50." }
+        ]
+      },
+      "doorway-cafe": {
+        name: "The Doorway Café",
+        baseLikes: 489,
+        baseComments: 62,
+        comments: [
+          { author: "Tanmay (EE)", time: "3h ago", text: "Played Catan here for 3 hours on Sunday. Free Wi-Fi and the peri-peri fries platter is huge." },
+          { author: "Shreya", time: "1d ago", text: "Great study cafe in the afternoons, super calm music and good charging ports." }
+        ]
+      },
+      "basaveshwara-khanavali": {
+        name: "Basaveshwara Khanavali",
+        baseLikes: 537,
+        baseComments: 73,
+        comments: [
+          { author: "Pranav (Krishna Hostel, 3rd Flr)", time: "Just now", text: "Unlimited hot Jolada Roti with shenga chutney and ennegai. Absolute must-visit for authentic North Karnataka food." },
+          { author: "Deepak (ME)", time: "4h ago", text: "₹110 unlimited thali. Ask for extra spicy powder and fresh curd. Clean, authentic, and fast service." },
+          { author: "Kavya (CSE)", time: "Yesterday", text: "Don't skip the buttermilk at the end, perfect digestive after heavy rotti meal." }
+        ]
+      },
+      "thakur-pedha": {
+        name: "Babu Singh Thakur Pedha & Girmit Adda",
+        baseLikes: 782,
+        baseComments: 112,
+        comments: [
+          { author: "Akash (4th Yr)", time: "2h ago", text: "Line Bazaar branch is the 1846 original. Always buy a half-kg box when heading home for holidays." },
+          { author: "Sourabh", time: "1d ago", text: "Evening 5 PM Girmit + Mirchi Bhajji right outside the lane is unmatched street food." }
+        ]
+      },
+      "study-zone": {
+        name: "Study Zone Library & Reading Room",
+        baseLikes: 389,
+        baseComments: 56,
+        comments: [
+          { author: "Anurag (Krishna 301)", time: "1h ago", text: "AC is always on and individual cubicles have dual power sockets. Best place to study during end-sems." },
+          { author: "Priya (ECE)", time: "Yesterday", text: "High-speed Wi-Fi handles Zoom & coding video lectures without lag. Daily passes available." }
+        ]
+      },
+      "sbi-saptapur": {
+        name: "State Bank of India (SBI) Branch & CDM ATM",
+        baseLikes: 452,
+        baseComments: 41,
+        comments: [
+          { author: "Manish (IIT Dh)", time: "3h ago", text: "Use the 24/7 CDM (Cash Deposit Machine) on the left of the branch to deposit cash/fees without queuing inside." },
+          { author: "Rahul (Hostel Rep)", time: "2d ago", text: "SBI Saptapur branch staff is super helpful with IIT Dharwad student scholarship verifications." }
+        ]
+      },
+      "sdm-hospital": {
+        name: "SDM Medical College & Hospital",
+        baseLikes: 412,
+        baseComments: 34,
+        comments: [
+          { author: "Dr. Health Cell (IIT Dh)", time: "1d ago", text: "Emergency Casualty is open 24/7. Shared auto from Tapovan Nagar / Krishna Hostel takes around 12 minutes." },
+          { author: "Kiran", time: "3d ago", text: "In-house hospital pharmacy is open round-the-clock for prescription antibiotics and emergency meds." }
+        ]
+      },
+      "sadhankeri-lake": {
+        name: "Sadhankeri Lake & Da.Ra. Bendre Park",
+        baseLikes: 619,
+        baseComments: 81,
+        comments: [
+          { author: "Harsh (Krishna Hostel)", time: "2h ago", text: "1.5 km run from hostel. Best 6 AM jogging loop and serene sunset spot right near Tapovan Nagar." },
+          { author: "Aniket", time: "Yesterday", text: "Evening breeze by the lake with boiled sweet corn stalls is peak relaxation after a hard lab day." }
+        ]
+      },
+      "nrupatunga-betta": {
+        name: "Nrupatunga Betta (Hilltop Viewpoint)",
+        baseLikes: 894,
+        baseComments: 139,
+        comments: [
+          { author: "Varun (M.Tech)", time: "5h ago", text: "Top sunset point in Dharwad-Hubli. Catch BRTS to Unkal and walk up. Panoramic twin-city view!" },
+          { author: "Pooja", time: "2d ago", text: "Entry is just ₹10. Go at 5:30 PM for sunset." }
+        ]
+      },
+      "urban-oasis": {
+        name: "Urban Oasis Mall & PVR Cinemas",
+        baseLikes: 741,
+        baseComments: 98,
+        comments: [
+          { author: "Gaurav (CSE)", time: "4h ago", text: "Weekend movie spot. Take green BRTS Chigari to Hosur, takes just 35 minutes from Court Circle." },
+          { author: "Ritu", time: "Yesterday", text: "Food court has McDonald's, KFC, and Pizza Hut if you miss city food." }
+        ]
+      }
+    };
+
+    // ── Floating Heart Animation ──
+    function spawnFloatHeart(container, text) {
+      const fl = document.createElement('span');
+      fl.className = 'float-heart';
+      fl.textContent = text || '+1 ❤️';
+      fl.style.left = '10px';
+      fl.style.top = '-18px';
+      container.appendChild(fl);
+      setTimeout(() => fl.remove(), 1400);
+    }
+
+    // ── Like Toggle with Live Server Sync ──
+    let likeCooldown = false;
+    function toggleLike(btn) {
+      if (likeCooldown) return;
+      likeCooldown = true;
+      setTimeout(() => likeCooldown = false, 250);
+
+      const card = btn.closest('[data-post-id]');
+      const postId = card ? card.dataset.postId : null;
+      const icon = btn.querySelector('.material-icons-round');
+      const count = btn.querySelector('.count');
+      const isLiked = btn.classList.contains('liked');
+
+      if (!isLiked) {
+        btn.classList.add('liked');
+        if (icon) icon.textContent = 'favorite';
+        const current = parseInt(count.textContent) || 0;
+        count.textContent = current + 1;
+        spawnFloatHeart(btn, '+1 ❤️');
+
+        if (postId) {
+          try {
+            localStorage.setItem('kh_liked_' + postId, '1');
+            const prevExtra = parseInt(localStorage.getItem('kh_extra_likes_' + postId) || '0');
+            localStorage.setItem('kh_extra_likes_' + postId, (prevExtra + 1).toString());
+            fetch('https://abacus.jasoncameron.dev/hit/krishna-hostel-hub-iitdh/likes-' + postId).catch(() => {});
+          } catch(e) {}
+        }
+        showToast('Liked! Added to hostel favorites ❤️');
+      } else {
+        btn.classList.remove('liked');
+        if (icon) icon.textContent = 'favorite_border';
+        const current = parseInt(count.textContent) || 0;
+        count.textContent = Math.max(0, current - 1);
+
+        if (postId) {
+          try {
+            localStorage.removeItem('kh_liked_' + postId);
+            const prevExtra = parseInt(localStorage.getItem('kh_extra_likes_' + postId) || '0');
+            localStorage.setItem('kh_extra_likes_' + postId, Math.max(0, prevExtra - 1).toString());
+          } catch(e) {}
+        }
+        showToast('Removed from favorites');
+      }
+    }
+
+    // ── Community Comments Modal ──
+    let currentCommentPostId = null;
+
+    function openComments(btnOrPostId) {
+      let postId = null;
+      if (typeof btnOrPostId === 'string') {
+        postId = btnOrPostId;
+      } else {
+        const parent = btnOrPostId.closest('[data-post-id]');
+        postId = parent ? parent.dataset.postId : null;
+      }
+      if (!postId || !POST_DATA[postId]) return;
+      currentCommentPostId = postId;
+      const data = POST_DATA[postId];
+
+      let customComments = [];
+      try {
+        const stored = localStorage.getItem('kh_comments_' + postId);
+        if (stored) customComments = JSON.parse(stored);
+      } catch(e) {}
+
+      const allComments = [...customComments.slice().reverse(), ...data.comments];
+      const titleEl = document.getElementById('commentsModalTitle');
+      const subEl = document.getElementById('commentsModalSubtitle');
+      const listEl = document.getElementById('commentsList');
+
+      if (titleEl) {
+        titleEl.innerHTML = `<span class="material-icons-round" style="color:var(--accent2);font-size:1.15rem">chat</span> <span>${escapeHtml(data.name)}</span>`;
+      }
+      if (subEl) {
+        subEl.textContent = `${data.baseComments + customComments.length} verified tips from Krishna Hostel & IIT Dharwad students`;
+      }
+
+      if (listEl) {
+        listEl.innerHTML = allComments.map(c => `
+          <div class="comment-card ${c.time === 'Just now' ? 'new-comment' : ''}">
+            <div class="c-header">
+              <span class="c-author"><span class="material-icons-round" style="font-size:.9rem;color:var(--accent)">account_circle</span>${escapeHtml(c.author)}</span>
+              <span class="c-time">${escapeHtml(c.time)}</span>
+            </div>
+            <div class="c-body">${escapeHtml(c.text)}</div>
+          </div>
+        `).join('');
+      }
+
+      openModal('commentsModal');
+    }
+
+    function submitComment(e) {
+      e.preventDefault();
+      if (!currentCommentPostId || !POST_DATA[currentCommentPostId]) return;
+
+      const authorInp = document.getElementById('commentAuthor');
+      const textInp = document.getElementById('commentText');
+      const author = authorInp.value.trim();
+      const text = textInp.value.trim();
+      if (!author || !text) return;
+
+      const newC = { author, text, time: 'Just now' };
+
+      let customComments = [];
+      try {
+        const stored = localStorage.getItem('kh_comments_' + currentCommentPostId);
+        if (stored) customComments = JSON.parse(stored);
+      } catch(e) {}
+      customComments.push(newC);
+      try {
+        localStorage.setItem('kh_comments_' + currentCommentPostId, JSON.stringify(customComments));
+      } catch(e) {}
+
+      const act = document.querySelector(`.feed-card-actions[data-post-id="${currentCommentPostId}"]`);
+      if (act) {
+        const commentCountEl = act.querySelector('button:nth-child(2) .count');
+        if (commentCountEl) {
+          const cur = parseInt(commentCountEl.textContent) || POST_DATA[currentCommentPostId].baseComments;
+          commentCountEl.textContent = cur + 1;
+        }
+      }
+
+      fetch('https://abacus.jasoncameron.dev/hit/krishna-hostel-hub-iitdh/comments-' + currentCommentPostId).catch(() => {});
+
+      textInp.value = '';
+      openComments(currentCommentPostId);
+      showToast('Tip posted to hostel community board! 💬');
+    }
+
+    // ── Initialize Live Post Likes & Comments ──
+    async function initLivePostCounters() {
+      document.querySelectorAll('.feed-card-actions[data-post-id]').forEach(act => {
+        const postId = act.dataset.postId;
+        const data = POST_DATA[postId];
+        if (!data) return;
+
+        const likeBtn = act.querySelector('button:first-child');
+        const commentBtn = act.querySelector('button:nth-child(2)');
+        const likeCountEl = likeBtn ? likeBtn.querySelector('.count') : null;
+        const commentCountEl = commentBtn ? commentBtn.querySelector('.count') : null;
+
+        const isLiked = localStorage.getItem('kh_liked_' + postId) === '1';
+        if (isLiked && likeBtn) {
+          likeBtn.classList.add('liked');
+          const ic = likeBtn.querySelector('.material-icons-round');
+          if (ic) ic.textContent = 'favorite';
+        }
+
+        let customComments = [];
+        try {
+          const stored = localStorage.getItem('kh_comments_' + postId);
+          if (stored) customComments = JSON.parse(stored);
+        } catch(e) {}
+
+        const totalComments = data.baseComments + customComments.length;
+        if (commentCountEl) commentCountEl.textContent = totalComments;
+
+        const localExtra = parseInt(localStorage.getItem('kh_extra_likes_' + postId) || '0');
+        const initialLikes = data.baseLikes + localExtra;
+        if (likeCountEl) likeCountEl.textContent = initialLikes;
+
+        // Fetch live server hits for this post
+        (async () => {
+          try {
+            const res = await fetch('https://abacus.jasoncameron.dev/get/krishna-hostel-hub-iitdh/likes-' + postId);
+            if (res.ok) {
+              const d = await res.json();
+              const serverHits = Number(d.value) || 0;
+              const liveTarget = Math.max(initialLikes, data.baseLikes + serverHits + (isLiked ? 1 : 0));
+              if (likeCountEl) likeCountEl.textContent = liveTarget;
+            }
+          } catch(err) {}
+        })();
+      });
+
+      // Periodic Community Activity Heartbeat (random active student likes a place)
+      setInterval(() => {
+        const actions = Array.from(document.querySelectorAll('.feed-card-actions[data-post-id]'));
+        if (actions.length === 0) return;
+        const randomAct = actions[Math.floor(Math.random() * actions.length)];
+        const countEl = randomAct.querySelector('button:first-child .count');
+        const btn = randomAct.querySelector('button:first-child');
+        if (countEl && btn) {
+          const cur = parseInt(countEl.textContent) || 0;
+          countEl.textContent = cur + 1;
+          spawnFloatHeart(btn, '+1 ❤️');
+        }
+      }, 16000);
+    }
+    initLivePostCounters();
+
+    // ══════════════════════════════════════════════════════════════
+    // 🔍 SEARCH DATASET & MODAL
+    // ══════════════════════════════════════════════════════════════
+
     const SEARCH_DATA = [
       { title: "Hotel Amrutha Sagar", category: "Eatery • Breakfast, Masala Dosa & Thali (250m)", section: "eateriesSection", keywords: "breakfast dosa idli thali food meal south indian coffee restaurant mess" },
       { title: "Ice Zone", category: "Eatery • Legendary Paneer Rolls & Shakes (1.8km)", section: "eateriesSection", keywords: "rolls paneer roll shawarma snack cutlet shake fast food street food" },
@@ -1285,8 +1720,8 @@
       resultsEl.innerHTML = matches.map(m => `
         <div style="background:var(--card);border:1px solid var(--border);border-radius:10px;padding:10px 12px;cursor:pointer;display:flex;justify-content:space-between;align-items:center" onclick="handleSearchClick('${m.title.replace(/'/g, "\\'")}', '${m.section}')">
           <div>
-            <div style="font-weight:700;font-size:.82rem">${m.title}</div>
-            <div style="font-size:.68rem;color:var(--text2)">${m.category}</div>
+            <div style="font-weight:700;font-size:.82rem">${escapeHtml(m.title)}</div>
+            <div style="font-size:.68rem;color:var(--text2)">${escapeHtml(m.category)}</div>
           </div>
           <span class="material-icons-round" style="color:var(--accent);font-size:1.1rem">arrow_forward</span>
         </div>
@@ -1305,20 +1740,16 @@
     document.querySelectorAll('.modal-backdrop').forEach(m => {
       m.addEventListener('click', e => { if (e.target === m) m.classList.remove('open'); });
     });
-    document.addEventListener('keydown', e => {
-      if (e.key === 'Escape') {
-        document.querySelectorAll('.modal-backdrop.open').forEach(m => m.classList.remove('open'));
-      }
-    });
 
-    // ── Real-Time Community Visitor & Active Counter ──
+    // ══════════════════════════════════════════════════════════════
+    // 🌐 REAL-TIME COMMUNITY VISITOR COUNTER
+    // ══════════════════════════════════════════════════════════════
     (() => {
       const el = document.getElementById('visitCount');
       const onlineEl = document.getElementById('onlineCount');
-      const BASE_COMMUNITY = 340; // baseline hostel students
+      const BASE_COMMUNITY = 340;
       const KEY = 'kh_live_hits';
 
-      // 1. Initial cached value from localStorage
       let cached = BASE_COMMUNITY;
       try {
         const stored = parseInt(localStorage.getItem(KEY));
@@ -1326,17 +1757,14 @@
       } catch (e) {}
       el.textContent = cached.toLocaleString('en-IN');
 
-      // 2. Fetch live increment from server
       (async () => {
         try {
-          // Calling /hit/ increments each time so refreshes and unique visits count up live!
           const res = await fetch('https://abacus.jasoncameron.dev/hit/krishna-hostel-hub-iitdh/community-visits');
           const data = await res.json();
           const serverHits = Number(data.value) || 0;
           const target = Math.max(cached + 1, BASE_COMMUNITY + serverHits);
           try { localStorage.setItem(KEY, target.toString()); } catch (e) {}
 
-          // Smooth roll-up animation
           const start = Math.max(cached - 5, BASE_COMMUNITY);
           const t0 = performance.now();
           const duration = 1000;
@@ -1348,16 +1776,14 @@
           };
           requestAnimationFrame(animate);
         } catch (err) {
-          // Fallback increment for local session if offline
           const next = cached + 1;
           el.textContent = next.toLocaleString('en-IN');
           try { localStorage.setItem(KEY, next.toString()); } catch (e) {}
         }
       })();
 
-      // 3. Dynamic Real-Time Active Users (fluctuates between 3 and 7 students)
       if (onlineEl) {
-        let currentOnline = Math.floor(Math.random() * 3) + 4; // 4 to 6
+        let currentOnline = Math.floor(Math.random() * 3) + 4;
         onlineEl.textContent = currentOnline;
         setInterval(() => {
           const delta = (Math.random() > 0.5 ? 1 : -1) * (Math.random() > 0.6 ? 1 : 0);
